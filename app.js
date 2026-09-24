@@ -23,6 +23,12 @@ function renderState(){
   document.getElementById("currentLocation").textContent=STATE.currentLocation||"Unknown";
   document.getElementById("currentPressure").textContent=STATE.currentPressure||"None recorded";
   document.getElementById("campaignState").textContent=STATE.campaignState||"Unrecorded";
+  const rc=document.getElementById("knownRecordCount");
+  const tc=document.getElementById("knownThreadCount");
+  const dc=document.getElementById("knownDiscoveryCount");
+  if(rc)rc.textContent=Object.keys(DATA).length;
+  if(tc)tc.textContent=THREADS.length;
+  if(dc)dc.textContent=DISC.length;
 }
 
 function renderThreads(){
