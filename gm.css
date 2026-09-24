@@ -1,0 +1,44 @@
+.gm-body{background:#090709;min-height:100vh}
+.gm-shell{max-width:1540px;margin:0 auto;padding:0 24px 70px}
+.gm-top{display:flex;justify-content:space-between;align-items:end;gap:20px;padding:30px 0 22px;border-bottom:1px solid #3a262e}
+.gm-top h1{font:54px/1 Georgia,serif;margin:5px 0 0;letter-spacing:-.03em}
+.gm-top-actions{display:flex;align-items:center;gap:10px;color:#9d8f94;font-size:11px}
+.gm-top-actions button,.gm-actions button,.gm-panel button{border:1px solid #744353;background:#24151b;color:#f0dde2;padding:10px 13px}
+.gm-top-actions button:hover,.gm-actions button:hover,.gm-panel button:hover{border-color:#b44a62;background:#331923}
+.gm-actions .secondary{background:#151013;color:#bdaeb3}
+.gm-auth-card{max-width:680px;margin:80px auto;padding:32px;border:1px solid #4a313a;background:linear-gradient(180deg,#181115,#100c0e);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.gm-auth-card h2{font:34px Georgia,serif;margin:7px 0 12px}
+.gm-auth-card p{color:#a99ca1;line-height:1.65}
+.gm-auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.gm-auth-grid label,.gm-fields label,.gm-inline label{color:#8e7f84;font-size:9px;text-transform:uppercase;letter-spacing:.12em}
+.gm-auth-grid input,.gm-fields input,.gm-fields textarea,.gm-fields select,.gm-subform input,.gm-subform textarea,.gm-subform select,.gm-inline input,.gm-inline select{
+  width:100%;margin-top:6px;background:#0f0b0d;border:1px solid #3f2b33;color:#eee5e8;padding:10px 11px;outline:none
+}
+.gm-fields textarea,.gm-subform textarea{min-height:100px;resize:vertical}
+.gm-actions{display:flex;gap:9px;margin-top:18px}
+.gm-message{min-height:20px;color:#c4aeb5;font-size:11px}
+.gm-status-strip{display:grid;grid-template-columns:repeat(3,1fr);margin:24px 0 16px;border:1px solid #38252c;background:#100c0e}
+.gm-status-strip div{padding:17px 20px;border-right:1px solid #38252c}
+.gm-status-strip div:last-child{border-right:0}
+.gm-status-strip small{display:block;color:#7f6f75;font-size:8px;letter-spacing:.15em}
+.gm-status-strip strong{display:block;margin-top:5px;font:18px Georgia,serif}
+.gm-grid{display:grid;gap:16px;margin-top:16px}.gm-grid.two{grid-template-columns:1fr 1fr}
+.gm-panel{border:1px solid #3b282f;background:linear-gradient(180deg,#151013,#0f0b0d);padding:20px;box-shadow:0 18px 46px rgba(0,0,0,.18)}
+.gm-panel-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:17px;padding-bottom:13px;border-bottom:1px solid #352229}
+.gm-panel-head h2{font:30px Georgia,serif;margin:4px 0 0}
+.gm-fields{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.gm-fields .wide{grid-column:1/-1}
+.gm-strahd{background:radial-gradient(circle at 90% 0,rgba(130,34,56,.16),transparent 35%),linear-gradient(180deg,#171013,#0f0b0d)}
+.gm-stack{display:grid;gap:8px;max-height:390px;overflow:auto;margin-bottom:14px}
+.gm-item{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px;border:1px solid #35242a;background:#110d0f}
+.gm-item small{display:block;color:#8d7b81;font-size:8px;letter-spacing:.12em;text-transform:uppercase}
+.gm-item strong{display:block;font:18px Georgia,serif;margin-top:3px}
+.gm-item span{color:#ac9da2;font-size:11px}
+.gm-badge{align-self:start;border:1px solid #67404b;color:#d8bbc3;padding:4px 7px;font-size:8px;text-transform:uppercase;letter-spacing:.1em}
+.gm-subform{display:grid;gap:8px;padding-top:14px;border-top:1px solid #342229}
+.gm-inline{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.publish-box{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:18px;padding:18px;border:1px solid #784356;background:linear-gradient(90deg,#2b151d,#140e11)}
+.publish-box h3{font:24px Georgia,serif;margin:4px 0}.publish-box p{margin:0;color:#a8949a;font-size:11px;line-height:1.5}.publish-box button{white-space:nowrap;border-color:#a94a61;background:#461d28}
+.hidden{display:none!important}
+@media(max-width:1000px){.gm-grid.two{grid-template-columns:1fr}.gm-status-strip{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:700px){.gm-shell{padding:0 14px 50px}.gm-top{align-items:start;flex-direction:column}.gm-auth-grid,.gm-fields,.gm-status-strip{grid-template-columns:1fr}.gm-status-strip div{border-right:0;border-bottom:1px solid #38252c}.gm-inline{grid-template-columns:1fr}.publish-box{align-items:flex-start;flex-direction:column}.publish-box button{width:100%}}
