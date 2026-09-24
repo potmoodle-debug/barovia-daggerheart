@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 const SUPABASE_URL="https://dosdtvaeoeymlmnesoht.supabase.co";
 const PUBLISHABLE_KEY=window.BAROVIA_PUBLIC_FEED_KEY;
 const API_URL=SUPABASE_URL+"/functions/v1/barovia-gm-api";
+const GM_RETURN_URL="https://potmoodle-debug.github.io/barovia-daggerheart/gm.html";
 const supabase=createClient(SUPABASE_URL,PUBLISHABLE_KEY);
 
 const $=id=>document.getElementById(id);
@@ -91,10 +92,22 @@ $("signInBtn").onclick=async()=>{
 
 $("signUpBtn").onclick=async()=>{
   $("authMessage").textContent="";
-  const {data,error}=await supabase.auth.signUp({email:$("emailInput").value.trim(),password:$("passwordInput").value});
+  const {data,error}=await supabase.auth.signUp({email:$("emailInput").value.trim(),password:$("passwordInput").value,options:{emailRedirectTo:GM_RETURN_URL}});
   if(error){$("authMessage").textContent=error.message;return}
   $("authMessage").textContent=data.session?"GM login created.":"Check your email to confirm the new GM login, then return here and sign in.";
   if(data.session)await authState();
+};
+
+$("resendBtn").onclick=async()=>{
+  $("authMessage").textContent="";
+  const email=$("emailInput").value.trim();
+  if(!email){$("authMessage").textContent="Enter your GM email first.";return}
+  const {error}=await supabase.auth.resend({
+    type:"signup",
+    email,
+    options:{emailRedirectTo:GM_RETURN_URL}
+  });
+  $("authMessage").textContent=error?error.message:"A new confirmation email has been sent. Use the newest link.";
 };
 
 $("signOutBtn").onclick=async()=>{await supabase.auth.signOut();await authState()};
