@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#120d0f">
+<meta name="description" content="A spoiler-conscious Daggerheart player guide for a campaign set in Barovia.">
+<title>Barovia — Daggerheart Campaign Guide</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to campaign content</a>
+<div class="shell">
+  <aside class="sidebar" id="sidebar" aria-label="Barovia navigation">
+    <button class="brand" onclick="location.hash='#/'" aria-label="Barovia home">
+      <span class="sigil" aria-hidden="true">✦</span>
+      <span><small>PLAYER GUIDE</small><strong>BAROVIA</strong></span>
+    </button>
+
+    <div class="safe-mark">Known. Seen. Earned.</div>
+
+    <label class="search">
+      <span>Search Barovia</span>
+      <input id="searchInput" type="search" placeholder="Place, person, threat…" autocomplete="off">
+    </label>
+
+    <nav id="nav"></nav>
+
+    <div class="sidebar-foot">
+      This guide shows only what the characters have legitimately learned.
+      Hidden motives, unrevealed locations and future events remain outside the player site.
+    </div>
+  </aside>
+
+  <main id="main">
+    <header class="topbar">
+      <button id="menuBtn" class="menu" type="button" aria-label="Open navigation">☰</button>
+      <div id="crumb">Barovia / Home</div>
+      <div class="top-actions">
+        <button type="button" onclick="location.hash='#/threads'">Possibilities</button>
+        <button type="button" onclick="location.hash='#/brain'">Player Brain</button>
+      </div>
+    </header>
+
+    <section id="home">
+      <section class="hero">
+        <div class="moon" aria-hidden="true"></div>
+        <div class="mist mist-a" aria-hidden="true"></div>
+        <div class="mist mist-b" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <div class="eyebrow">A VALLEY BEHIND THE MISTS</div>
+          <h1>What you know of Barovia.</h1>
+          <p>
+            Not a chapter list and not a quest log. This is the party's living record of the places,
+            people, dangers and unanswered questions they have actually discovered.
+          </p>
+          <div class="hero-buttons">
+            <button type="button" onclick="location.hash='#/threads'">What could happen next</button>
+            <button type="button" onclick="location.hash='#/world'">Explore what is known</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="state-strip" aria-label="Current campaign state">
+        <div><small>CURRENT LOCATION</small><strong id="currentLocation"></strong></div>
+        <div><small>IMMEDIATE PRESSURE</small><strong id="currentPressure"></strong></div>
+        <div><small>CAMPAIGN STATE</small><strong id="campaignState"></strong></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">CURRENT POSSIBILITIES</div>
+            <h2>What could happen next</h2>
+          </div>
+          <button type="button" onclick="location.hash='#/threads'">Open full record →</button>
+        </div>
+        <p class="intro">
+          These are not assignments. They are situations the characters know about and may choose
+          to pursue, ignore, complicate or walk away from.
+        </p>
+        <div id="threadGrid" class="grid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">RECENTLY LEARNED</div>
+            <h2>Latest discoveries</h2>
+          </div>
+        </div>
+        <div id="discoveryGrid" class="grid"></div>
+      </section>
+
+      <section class="field-note">
+        <span class="field-mark" aria-hidden="true">✦</span>
+        <div>
+          <div class="eyebrow">CAMPAIGN PRINCIPLE</div>
+          <h2>Barovia changes when you act.</h2>
+          <p>
+            Allies can become exposed. Safe routes can close. Rumours can spread. Enemies can react.
+            The valley does not wait for the party to reach the next chapter.
+          </p>
+        </div>
+      </section>
+    </section>
+
+    <article id="article" class="article hidden" tabindex="-1"></article>
+
+    <section id="brain" class="brain hidden">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">RELATIONSHIP VIEW</div>
+          <h2>Player Brain</h2>
+        </div>
+      </div>
+      <p class="intro">Choose a known record to see what the party currently connects to it.</p>
+      <div id="brainRoot" class="brain-root"></div>
+    </section>
+  </main>
+</div>
+
+<script src="data.js?v=1"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>
