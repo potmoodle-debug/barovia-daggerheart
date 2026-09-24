@@ -6,7 +6,8 @@
 <meta name="theme-color" content="#120d0f">
 <meta name="description" content="A spoiler-conscious Daggerheart player guide for a campaign set in Barovia.">
 <title>Barovia — Daggerheart Campaign Guide</title>
-<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="character.css?v=1">
 </head>
 <body>
 <a class="skip" href="#main">Skip to campaign content</a>
@@ -37,6 +38,7 @@
       <button id="menuBtn" class="menu" type="button" aria-label="Open navigation">☰</button>
       <div id="crumb">Barovia / Home</div>
       <div class="top-actions">
+        <button type="button" onclick="location.hash='#/character'">Character</button>
         <button type="button" onclick="location.hash='#/threads'">Possibilities</button>
         <button type="button" onclick="location.hash='#/brain'">Player Brain</button>
       </div>
@@ -107,6 +109,17 @@
 
     <article id="article" class="article hidden" tabindex="-1"></article>
 
+    <section id="character" class="character-view hidden" tabindex="-1">
+      <div class="character-toolbar">
+        <div>
+          <div class="eyebrow">DAGGERHEART LIVE PLAY</div>
+          <h1 id="characterHeading">Character</h1>
+        </div>
+        <button id="resetCharacterBtn" type="button">Reset local sheet</button>
+      </div>
+      <div id="characterApp"></div>
+    </section>
+
     <section id="brain" class="brain hidden">
       <div class="section-head">
         <div>
@@ -120,7 +133,8 @@
   </main>
 </div>
 
-<script src="data.js?v=1"></script>
-<script src="app.js?v=1"></script>
+<script src="data.js?v=2"></script>
+<script src="character.js?v=1"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
