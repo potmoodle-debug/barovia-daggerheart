@@ -3,7 +3,7 @@ const STORAGE_KEY='barovia-daggerheart-character-v1';
 const DEFAULT_CHARACTER={
  name:'Unnamed traveller',pronouns:'',heritage:'',className:'',subclass:'',level:1,evasion:0,armorScore:0,
  hp:{current:6,max:6},stress:{current:0,max:6},hope:{current:2,max:6},armor:{current:0,max:0},
- thresholds:{major:0,severe:0,massive:0,death:0},
+ thresholds:{major:0,severe:0},
  traits:{Agility:0,Strength:0,Finesse:0,Instinct:0,Presence:0,Knowledge:0},
  experiences:[{name:'',value:2},{name:'',value:2}],notes:''
 };
@@ -14,7 +14,7 @@ let state=load();
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));const h=document.getElementById('characterHeading');if(h)h.textContent=state.name||'Character';}
 function clamp(n,min,max){return Math.max(min,Math.min(max,Number(n)||0));}
-function resourceCard(key,label){const r=state[key];return '<div class="resource-card"><div class="resource-head"><strong>'+label+'</strong><span class="resource-value">'+r.current+'/'+r.max+'</span></div><div class="resource-buttons"><button type="button" data-resource="'+key+'" data-delta="-1"'+(r.current<=0?' disabled':'')+'>−1</button><button type="button" data-resource="'+key+'" data-delta="1"'+(r.current>=r.max?' disabled':'')+'>+1</button></div></div>';}
+function resourceCard(key,label){const r=state[key];return '<div class="resource-card"><div class="resource-head"><strong>'+label+'</strong><span class="resource-value">'+r.current+'/'+r.max+'</span></div><label class="character-small-label">Maximum</label><input class="resource-max-input" type="number" min="0" data-resource-max="'+key+'" value="'+r.max+'"><div class="resource-buttons"><button type="button" data-resource="'+key+'" data-delta="-1"'+(r.current<=0?' disabled':'')+'>−1</button><button type="button" data-resource="'+key+'" data-delta="1"'+(r.current>=r.max?' disabled':'')+'>+1</button></div></div>';}
 function render(){
  const root=document.getElementById('characterApp');if(!root)return;
  let traitCards='';Object.entries(state.traits).forEach(([name,value])=>{traitCards+='<div class="trait-card"><strong>'+name+'</strong><div class="trait-controls"><input type="number" min="-5" max="10" data-trait="'+name+'" value="'+value+'"><button type="button" data-roll-trait="'+name+'">Roll</button></div></div>';});
@@ -31,7 +31,7 @@ function render(){
  '<h3>Traits</h3><div class="trait-grid">'+traitCards+'</div>'+
  '<h3>Core resources</h3><div class="resource-grid">'+resourceCard('hp','HP')+resourceCard('stress','Stress')+resourceCard('hope','Hope')+resourceCard('armor','Armour')+'</div>'+
  '<h3>Defence & damage</h3><div class="character-identity"><div class="character-field"><label>Evasion</label><input data-field="evasion" type="number" value="'+state.evasion+'"></div><div class="character-field"><label>Armour Score</label><input data-field="armorScore" type="number" value="'+state.armorScore+'"></div></div>'+
- '<div class="threshold-grid"><div class="character-field"><label>Major</label><input data-threshold="major" type="number" value="'+state.thresholds.major+'"></div><div class="character-field"><label>Severe</label><input data-threshold="severe" type="number" value="'+state.thresholds.severe+'"></div><div class="character-field"><label>Massive</label><input data-threshold="massive" type="number" value="'+state.thresholds.massive+'"></div><div class="character-field"><label>Death</label><input data-threshold="death" type="number" value="'+state.thresholds.death+'"></div></div>'+
+ '<div class="threshold-grid"><div class="character-field"><label>Major threshold</label><input data-threshold="major" type="number" value="'+state.thresholds.major+'"></div><div class="character-field"><label>Severe threshold</label><input data-threshold="severe" type="number" value="'+state.thresholds.severe+'"></div></div>'+
  '<h3>Experiences</h3><div class="experience-list">'+exps+'</div><button type="button" class="dh-btn add-experience" id="addExperienceBtn">Add Experience</button>'+
  '<h3>Notes</h3><div class="character-field"><textarea data-field="notes" placeholder="Equipment, abilities, conditions, personal notes…">'+esc(state.notes)+'</textarea></div><div class="save-note">This sheet is saved only in this browser. No character data is sent to the public repository.</div>'+
  '</section></div><aside class="character-panel roll-panel"><h2>Duality Dice</h2><div id="rollResult" class="roll-result"><div class="eyebrow">READY</div><p>Choose a trait or make a custom roll.</p></div>'+
@@ -44,6 +44,7 @@ function wire(){
  document.querySelectorAll('[data-trait]').forEach(el=>el.addEventListener('input',()=>{state.traits[el.dataset.trait]=Number(el.value)||0;save();}));
  document.querySelectorAll('[data-threshold]').forEach(el=>el.addEventListener('input',()=>{state.thresholds[el.dataset.threshold]=Number(el.value)||0;save();}));
  document.querySelectorAll('[data-resource]').forEach(btn=>btn.addEventListener('click',()=>{const k=btn.dataset.resource;state[k].current=clamp(state[k].current+Number(btn.dataset.delta),0,state[k].max);render();}));
+ document.querySelectorAll('[data-resource-max]').forEach(el=>el.addEventListener('change',()=>{const k=el.dataset.resourceMax;state[k].max=Math.max(0,Number(el.value)||0);state[k].current=clamp(state[k].current,0,state[k].max);render();}));
  document.querySelectorAll('[data-experience-name]').forEach(el=>el.addEventListener('input',()=>{state.experiences[Number(el.dataset.experienceName)].name=el.value;save();}));
  document.querySelectorAll('[data-experience-value]').forEach(el=>el.addEventListener('input',()=>{state.experiences[Number(el.dataset.experienceValue)].value=Number(el.value)||0;save();}));
  document.querySelectorAll('[data-remove-experience]').forEach(btn=>btn.addEventListener('click',()=>{state.experiences.splice(Number(btn.dataset.removeExperience),1);render();}));
