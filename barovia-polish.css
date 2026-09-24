@@ -228,3 +228,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   #discoveryGrid .card:first-child{grid-column:auto}
   .field-note{margin:0 16px 48px;padding:28px 24px}
 }
+
+.gm-switch{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:38px;padding:0 12px;
+  border:1px solid rgba(180,74,98,.42);
+  background:linear-gradient(180deg,rgba(142,47,69,.16),rgba(142,47,69,.06));
+  color:#f0dbe1;text-decoration:none;
+  text-transform:uppercase;letter-spacing:.09em;
+  font-size:9px;font-weight:800;
+}
+.gm-switch:hover{
+  border-color:#b44a62;
+  background:#2f1720;
+  color:#fff1f5;
+  transform:translateY(-1px);
+}
+@media(max-width:620px){
+  .gm-switch{display:inline-flex}
+}
