@@ -20,6 +20,8 @@ This repository is intentionally separate from the Greywake project. It shares d
 - `style.css` — Barovia-specific Gothic visual system.
 - `data.js` — player-safe campaign state, known records, current possibilities and relationships.
 - `app.js` — routing, navigation, search, record rendering and Player Brain.
+- `character.js` / `character.css` — browser-local Daggerheart live-play sheet and Duality Dice roller.
+- `gm-config.js` / `gm-bridge.js` — safe boundary for an approved player snapshot from a separate private GM backend.
 
 ## Important GM-data rule
 
@@ -33,11 +35,8 @@ A later GM control layer should use either:
 
 ## Planned next layer
 
-- Daggerheart character pages.
-- Hope / Fear / HP / Stress / Armour tracking.
 - Character-specific knowledge.
 - Campaign journal.
 - Better Player Brain relationship visualisation.
-- Live update bridge.
-- Separate private GM campaign state.
-- Reactive Barovia clocks and Strahd pressure model.
+- Live update publishing from the private GM backend.
+- Private reactive campaign-state tools.
