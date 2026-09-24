@@ -153,6 +153,7 @@ function showRecord(name){
 function showThreads(){
   home.classList.add("hidden");
   brain.classList.add("hidden");
+  character.classList.add("hidden");
   article.classList.remove("hidden");
 
   article.innerHTML=`
@@ -245,6 +246,21 @@ function route(){
 
   showHome();
 }
+
+window.addEventListener("barovia:player-snapshot",event=>{
+  const p=event.detail||{};
+  if(p.state)Object.assign(STATE,p.state);
+  if(Array.isArray(p.threads)){THREADS.splice(0,THREADS.length,...p.threads);}
+  if(Array.isArray(p.discoveries)){DISC.splice(0,DISC.length,...p.discoveries);}
+  if(p.records)Object.assign(DATA,p.records);
+  if(p.categories){
+    Object.keys(CATS).forEach(k=>delete CATS[k]);
+    Object.assign(CATS,p.categories);
+  }
+  if(Array.isArray(p.edges)){EDGES.splice(0,EDGES.length,...p.edges);}
+  renderState();renderThreads();renderDiscoveries();renderNav(searchInput.value);
+  route();
+});
 
 window.addEventListener("hashchange",route);
 
