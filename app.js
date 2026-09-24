@@ -8,6 +8,7 @@ const STATE=window.BAROVIA_STATE||{};
 const home=document.getElementById("home");
 const article=document.getElementById("article");
 const brain=document.getElementById("brain");
+const character=document.getElementById("character");
 const nav=document.getElementById("nav");
 const searchInput=document.getElementById("searchInput");
 
@@ -115,6 +116,7 @@ function showRecord(name){
 
   home.classList.add("hidden");
   brain.classList.add("hidden");
+  character.classList.add("hidden");
   article.classList.remove("hidden");
 
   const d=DATA[name];
@@ -172,6 +174,7 @@ function showThreads(){
 function showBrain(rootName="Barovia"){
   home.classList.add("hidden");
   article.classList.add("hidden");
+  character.classList.add("hidden");
   brain.classList.remove("hidden");
 
   const root=document.getElementById("brainRoot");
@@ -198,6 +201,17 @@ function showBrain(rootName="Barovia"){
   window.scrollTo(0,0);
 }
 
+function showCharacter(){
+  home.classList.add("hidden");
+  article.classList.add("hidden");
+  brain.classList.add("hidden");
+  character.classList.remove("hidden");
+  document.getElementById("crumb").textContent="Barovia / Character";
+  document.title="Character — Barovia";
+  window.BAROVIA_CHARACTER?.show();
+  window.scrollTo(0,0);
+}
+
 function showWorld(){
   showRecord("Barovia");
 }
@@ -205,6 +219,7 @@ function showWorld(){
 function showHome(){
   article.classList.add("hidden");
   brain.classList.add("hidden");
+  character.classList.add("hidden");
   home.classList.remove("hidden");
 
   document.getElementById("crumb").textContent="Barovia / Home";
@@ -218,6 +233,7 @@ function route(){
   const h=location.hash||"#/";
 
   if(h==="#/"||h==="#"){showHome();return}
+  if(h==="#/character"){showCharacter();return}
   if(h==="#/threads"){showThreads();return}
   if(h==="#/brain"){showBrain();return}
   if(h==="#/world"){showWorld();return}
