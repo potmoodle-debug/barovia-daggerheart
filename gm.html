@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0709">
+<title>Barovia — GM Control</title>
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="barovia-polish.css?v=1">
+<link rel="stylesheet" href="gm.css?v=1">
+</head>
+<body class="gm-body">
+<div class="gm-shell">
+  <header class="gm-top">
+    <div>
+      <div class="eyebrow">PRIVATE CAMPAIGN CONTROL</div>
+      <h1>Barovia GM</h1>
+    </div>
+    <div class="gm-top-actions">
+      <span id="authStatus">Not signed in</span>
+      <button id="signOutBtn" class="hidden">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="authPanel" class="gm-auth-card">
+      <div class="eyebrow">GM ACCESS</div>
+      <h2>Sign in to the private campaign state</h2>
+      <p>Use the email attached to your Supabase account. Private campaign data is only returned after the backend verifies your account.</p>
+      <div class="gm-auth-grid">
+        <label>Email<input id="emailInput" type="email" autocomplete="email"></label>
+        <label>Password<input id="passwordInput" type="password" autocomplete="current-password"></label>
+      </div>
+      <div class="gm-actions">
+        <button id="signInBtn">Sign in</button>
+        <button id="signUpBtn" class="secondary">Create GM login</button>
+      </div>
+      <p id="authMessage" class="gm-message"></p>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <section class="gm-status-strip">
+        <div><small>CAMPAIGN</small><strong id="campaignStatus">—</strong></div>
+        <div><small>STRAHD</small><strong id="strahdStatus">—</strong></div>
+        <div><small>PLAYER SNAPSHOT</small><strong id="snapshotStatus">—</strong></div>
+      </section>
+
+      <div class="gm-grid two">
+        <section class="gm-panel">
+          <div class="gm-panel-head"><div><div class="eyebrow">LIVE STATE</div><h2>Campaign</h2></div><button id="saveCampaignBtn">Save</button></div>
+          <div class="gm-fields">
+            <label>Current location<input id="campaignLocation"></label>
+            <label>Immediate pressure<input id="campaignPressure"></label>
+            <label>Campaign phase<input id="campaignPhase"></label>
+            <label class="wide">GM notes<textarea id="campaignNotes"></textarea></label>
+          </div>
+        </section>
+
+        <section class="gm-panel gm-strahd">
+          <div class="gm-panel-head"><div><div class="eyebrow">PRIVATE PRESSURE</div><h2>Strahd</h2></div><button id="saveStrahdBtn">Save</button></div>
+          <div class="gm-fields">
+            <label>Overall posture
+              <select id="strahdPosture">
+                <option>observe</option><option>test</option><option>intrigue</option><option>isolate</option><option>claim</option><option>destroy</option>
+              </select>
+            </label>
+            <label>Active target<input id="strahdTarget"></label>
+            <label>Current interest<input id="strahdInterest"></label>
+            <label>Current test<input id="strahdTest"></label>
+            <label class="wide">Next move<textarea id="strahdNext"></textarea></label>
+            <label class="wide">Reason not to escalate<textarea id="strahdRestraint"></textarea></label>
+          </div>
+        </section>
+      </div>
+
+      <div class="gm-grid two">
+        <section class="gm-panel">
+          <div class="gm-panel-head"><div><div class="eyebrow">PER CHARACTER</div><h2>Strahd attention</h2></div></div>
+          <div id="attentionList" class="gm-stack"></div>
+          <div class="gm-subform">
+            <input id="attentionName" placeholder="Character name">
+            <select id="attentionStage">
+              <option>observe</option><option>test</option><option>intrigue</option><option>isolate</option><option>claim</option><option>destroy</option>
+            </select>
+            <input id="attentionReason" placeholder="Why Strahd is interested">
+            <input id="attentionPressure" placeholder="Next pressure">
+            <textarea id="attentionNotes" placeholder="Private notes"></textarea>
+            <button id="saveAttentionBtn">Save character attention</button>
+          </div>
+        </section>
+
+        <section class="gm-panel">
+          <div class="gm-panel-head"><div><div class="eyebrow">PEOPLE</div><h2>NPC state</h2></div></div>
+          <div id="npcList" class="gm-stack"></div>
+          <div class="gm-subform">
+            <input id="npcName" placeholder="NPC name">
+            <input id="npcPublicName" placeholder="Player-known name">
+            <input id="npcLocation" placeholder="Current location">
+            <input id="npcStatus" placeholder="Status">
+            <input id="npcDisposition" placeholder="Disposition">
+            <textarea id="npcMotive" placeholder="Private motive"></textarea>
+            <button id="saveNpcBtn">Add NPC</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="gm-grid two">
+        <section class="gm-panel">
+          <div class="gm-panel-head"><div><div class="eyebrow">REACTIVE WORLD</div><h2>Threat clocks</h2></div></div>
+          <div id="clockList" class="gm-stack"></div>
+          <div class="gm-subform">
+            <input id="clockLabel" placeholder="Clock name">
+            <input id="clockOwner" placeholder="Owner / faction">
+            <div class="gm-inline">
+              <label>Step<input id="clockStep" type="number" min="0" value="0"></label>
+              <label>Max<input id="clockMax" type="number" min="1" value="4"></label>
+              <label>Visibility<select id="clockVisibility"><option>hidden</option><option>hinted</option><option>known</option></select></label>
+            </div>
+            <input id="clockHint" placeholder="Player-safe hint">
+            <textarea id="clockAdvance" placeholder="What advances it?"></textarea>
+            <textarea id="clockConsequence" placeholder="What happens when it completes?"></textarea>
+            <button id="saveClockBtn">Add clock</button>
+          </div>
+        </section>
+
+        <section class="gm-panel gm-publish">
+          <div class="gm-panel-head"><div><div class="eyebrow">PLAYER-SAFE OUTPUT</div><h2>Revelations</h2></div></div>
+          <div id="revelationList" class="gm-stack"></div>
+          <div class="gm-subform">
+            <select id="revelationKind"><option value="discovery">Discovery</option><option value="thread">Possibility</option><option value="record">Record</option></select>
+            <input id="revelationSubject" placeholder="Internal subject">
+            <textarea id="revelationJson" spellcheck="false" placeholder='Player-safe JSON payload'></textarea>
+            <button id="queueRevelationBtn">Approve for next publish</button>
+          </div>
+          <div class="publish-box">
+            <div>
+              <div class="eyebrow">PUBLISH</div>
+              <h3>Send approved changes to players</h3>
+              <p>This updates the public snapshot only. Hidden GM state remains private.</p>
+            </div>
+            <button id="publishBtn">Publish to Players</button>
+          </div>
+          <p id="publishMessage" class="gm-message"></p>
+        </section>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="gm-config.js?v=1"></script>
+<script type="module" src="gm.js?v=1"></script>
+</body>
+</html>
