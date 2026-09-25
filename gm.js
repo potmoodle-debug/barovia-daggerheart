@@ -10,6 +10,7 @@ const $=id=>document.getElementById(id);
 
 const WORLD=window.BAROVIA_GM_WORLD||{};
 const SOURCE_LENSES=window.BAROVIA_SOURCE_LENSES||{guides:{},npcs:{}};
+const SHOTS=window.BAROVIA_SHOT_LIST||[];
 const VIEW_META={
   dashboard:["THINKING ABOUT THE GAME","Explore"],
   brain:["RELATIONSHIP VIEW","Campaign Brain"],
@@ -20,6 +21,7 @@ const VIEW_META={
   places:["THE LIVING VALLEY","Places"],
   strahd:["THE LAND'S MASTER","Strahd"],
   campaign:["CANON IN MOTION","Campaign State"],
+  visuals:["CINEMATOGRAPHY PLAN","Visual Library"],
   reference:["BEHIND THE SCREEN","Reference"]
 };
 
@@ -274,6 +276,40 @@ function renderWorldReference(){
     $("gmReferenceGrid").innerHTML=sourceCards+methodCards+factionCards+threatCards+secretCards;
   }
 }
+
+function renderShotLibrary(){
+  if(!$("gmShotGrid"))return;
+  const audience=$("shotAudience")?.value||"";
+  const type=$("shotType")?.value||"";
+  const filtered=SHOTS.filter(s=>(!audience||s.audience===audience)&&(!type||s.shot===type));
+  if($("shotCount"))$("shotCount").textContent=SHOTS.length;
+  $("gmShotGrid").innerHTML=filtered.map(s=>
+    '<article class="gm-shot-card">'+
+      '<div class="gm-shot-card-top"><span>#'+esc(s.priority)+'</span><small>'+esc(s.audience)+' · '+esc(s.shot)+'</small></div>'+
+      '<h3>'+esc(s.subject)+'</h3>'+
+      '<p class="gm-shot-purpose">'+esc(s.purpose)+'</p>'+
+      '<div class="gm-shot-specs">'+
+        '<div><small>CAMERA</small><strong>'+esc(s.camera)+'</strong></div>'+
+        '<div><small>LENS</small><strong>'+esc(s.lens)+'</strong></div>'+
+        '<div><small>VIEWPOINT</small><strong>'+esc(s.viewpoint)+'</strong></div>'+
+        '<div><small>LIGHTING</small><strong>'+esc(s.lighting)+'</strong></div>'+
+      '</div>'+
+      '<section><small>MUST COMMUNICATE</small><p>'+esc(s.must)+'</p></section>'+
+      '<section><small>AVOID</small><p>'+esc(s.avoid)+'</p></section>'+
+      '<footer><small>SITE USE</small><strong>'+esc(s.site)+'</strong></footer>'+
+    '</article>'
+  ).join("")||'<div class="gm-empty-whisper">No shots match those filters.</div>';
+}
+function initShotLibrary(){
+  if(!$("gmShotGrid"))return;
+  const types=[...new Set(SHOTS.map(s=>s.shot).filter(Boolean))].sort();
+  $("shotType").innerHTML='<option value="">All shot types</option>'+types.map(x=>'<option>'+esc(x)+'</option>').join("");
+  $("shotAudience").addEventListener("change",renderShotLibrary);
+  $("shotType").addEventListener("change",renderShotLibrary);
+  $("shotClear").onclick=()=>{value("shotAudience","");value("shotType","");renderShotLibrary()};
+  renderShotLibrary();
+}
+
 
 let selectedPlace=null;
 function placeNpcMatches(place,npc){
@@ -619,6 +655,7 @@ function initWorkingTools(){
 
 initNpcDatabase();
 renderWorldReference();
+initShotLibrary();
 bindViewNavigation();
 initWorkingTools();
 initExplore();
