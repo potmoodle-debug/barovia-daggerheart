@@ -224,32 +224,6 @@ $("saveClockBtn").onclick=async()=>{
   await refresh();
 };
 
-$("queueRevelationBtn").onclick=async()=>{
-  let payload={};
-  try{payload=JSON.parse($("revelationJson").value||"{}")}catch{alert("Player-safe payload must be valid JSON.");return}
-  await api("POST",{action:"queue_revelation",data:{
-    kind:$("revelationKind").value,
-    subject:$("revelationSubject").value,
-    player_safe_payload:payload
-  }});
-  value("revelationSubject","");value("revelationJson","");
-  await refresh();
-};
-
-$("publishBtn").onclick=async()=>{
-  if(!confirm("Publish all approved player-safe revelations and the current campaign summary?"))return;
-  $("publishMessage").textContent="Publishing…";
-  try{
-    const result=await api("POST",{action:"publish",data:{state:{
-      currentLocation:$("campaignLocation").value,
-      currentPressure:$("campaignPressure").value,
-      campaignState:$("campaignPhase").value
-    }}});
-    $("publishMessage").textContent="Published revision "+result.revision+" · "+result.published+" approved revelation(s).";
-    await refresh();
-  }catch(e){$("publishMessage").textContent=e.message}
-};
-
 supabase.auth.onAuthStateChange(()=>setTimeout(authState,0));
 authState();
 
