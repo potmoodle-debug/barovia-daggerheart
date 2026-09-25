@@ -11,9 +11,9 @@
 <title>Barovia — Daggerheart Campaign Guide</title>
 <link rel="stylesheet" href="style.css?v=2">
 <link rel="stylesheet" href="character.css?v=2">
-<link rel="stylesheet" href="barovia-polish.css?v=4">
+<link rel="stylesheet" href="barovia-polish.css?v=5">
 </head>
-<body data-build="barovia-v4">
+<body data-build="barovia-v5">
 <a class="skip" href="#main">Skip to campaign content</a>
 <div class="shell">
   <aside class="sidebar" id="sidebar" aria-label="Barovia navigation">
@@ -42,8 +42,10 @@
       <button id="menuBtn" class="menu" type="button" aria-label="Open navigation">☰</button>
       <div id="crumb">Barovia / Home</div>
       <div class="top-actions">
+        <a class="top-gm-link" href="gm.html">GM Control</a>
         <button type="button" onclick="location.hash='#/character'">Character</button>
         <button type="button" onclick="location.hash='#/threads'">Possibilities</button>
+        <button type="button" onclick="location.hash='#/record/Campaign%20Journal'">Campaign Log</button>
         <button type="button" onclick="location.hash='#/brain'">Player Brain</button>
       </div>
     </header>
@@ -84,35 +86,61 @@
         </blockquote>
       </section>
 
-      <section class="state-strip" aria-label="Current campaign state">
-        <div><small>CURRENT LOCATION</small><strong id="currentLocation"></strong></div>
-        <div><small>IMMEDIATE PRESSURE</small><strong id="currentPressure"></strong></div>
-        <div><small>CAMPAIGN STATE</small><strong id="campaignState"></strong></div>
+      <section class="home-dashboard">
+        <article class="home-panel home-panel-threads">
+          <header>
+            <div><span class="panel-symbol">✦</span><small>CURRENT POSSIBILITIES</small></div>
+            <button type="button" onclick="location.hash='#/threads'">View all →</button>
+          </header>
+          <div class="panel-art panel-art-road" aria-hidden="true"></div>
+          <div class="panel-copy">
+            <h2 id="featuredThreadTitle">At the edge of the known road</h2>
+            <p id="featuredThreadText">You stand where the road starts to crumble into mist. West lies uncertainty, and the land does not behave like weather.</p>
+          </div>
+        </article>
+
+        <article class="home-panel home-panel-discovery">
+          <header>
+            <div><span class="panel-symbol">◆</span><small>LATEST DISCOVERIES</small></div>
+            <button type="button" onclick="location.hash='#/record/The%20Mists'">View all →</button>
+          </header>
+          <div class="panel-art panel-art-letter" aria-hidden="true"></div>
+          <div class="panel-copy">
+            <h2 id="featuredDiscoveryTitle">The mists do not behave like weather</h2>
+            <p id="featuredDiscoveryText">The valley's mists move with purpose. They separate, watch, and return, as if the land itself decides what can be seen.</p>
+          </div>
+        </article>
+
+        <article class="home-panel home-panel-state">
+          <header>
+            <div><span class="panel-symbol">⌁</span><small>CAMPAIGN STATE</small></div>
+          </header>
+          <div class="panel-art panel-art-state" aria-hidden="true"></div>
+          <div class="panel-copy">
+            <h2 id="campaignState"></h2>
+            <p><strong id="currentLocation"></strong></p>
+            <p id="currentPressure"></p>
+          </div>
+        </article>
       </section>
 
-      <section class="section">
+      <section class="section lower-records">
         <div class="section-head">
           <div>
-            <div class="eyebrow">CURRENT POSSIBILITIES</div>
-            <h2>What could happen next</h2>
+            <div class="eyebrow">THE PARTY'S RECORD</div>
+            <h2>Known threads and discoveries</h2>
           </div>
-          <button type="button" onclick="location.hash='#/threads'">Open full record →</button>
         </div>
-        <p class="intro">
-          These are not assignments. They are situations the characters know about and may choose
-          to pursue, ignore, complicate or walk away from.
-        </p>
-        <div id="threadGrid" class="grid"></div>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
+        <div class="split-records">
           <div>
-            <div class="eyebrow">RECENTLY LEARNED</div>
-            <h2>Latest discoveries</h2>
+            <div class="mini-heading">Possibilities</div>
+            <div id="threadGrid" class="grid"></div>
+          </div>
+          <div>
+            <div class="mini-heading">Discoveries</div>
+            <div id="discoveryGrid" class="grid"></div>
           </div>
         </div>
-        <div id="discoveryGrid" class="grid"></div>
       </section>
 
       <section class="field-note">
@@ -159,6 +187,5 @@
 <script src="app.js?v=3"></script>
 <script src="gm-config.js?v=1"></script>
 <script src="gm-bridge.js?v=1"></script>
-<a class="site-switch-float site-switch-gm" href="gm.html">GM Control</a>
 </body>
 </html>
