@@ -12,13 +12,11 @@ const WORLD=window.BAROVIA_GM_WORLD||{};
 const SOURCE_LENSES=window.BAROVIA_SOURCE_LENSES||{guides:{},npcs:{}};
 const VIEW_META={
   dashboard:["AT THE TABLE","Dashboard"],
-  sessions:["PREP → PLAY → CANON","Sessions"],
+  live:["RIGHT NOW","Live Play"],
   threads:["MOVING WITHOUT THE PARTY","Threads"],
+  prep:["BEFORE THE SESSION","Prep"],
   people:["THE CAST","People"],
-  places:["THE VALLEY","Places"],
-  factions:["POWER & LOYALTY","Factions"],
-  threats:["DANGER","Threats"],
-  secrets:["WHAT IS ACTUALLY TRUE","Secrets & Lore"],
+  places:["THE LIVING VALLEY","Places"],
   strahd:["THE LAND'S MASTER","Strahd"],
   campaign:["CANON IN MOTION","Campaign State"],
   reference:["BEHIND THE SCREEN","Reference"]
@@ -42,13 +40,54 @@ function recordCard(title,kicker,body,meta=""){
   return '<article class="gm-record-card"><small>'+esc(kicker)+'</small><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p>'+(meta?'<div class="gm-record-meta">'+esc(meta)+'</div>':'')+'</article>';
 }
 function renderWorldReference(){
-  if($("gmPlaceGrid")) $("gmPlaceGrid").innerHTML=(WORLD.places||[]).map(x=>recordCard(x.name,x.kind,x.summary,x.pressure)).join("");
-  if($("gmFactionGrid")) $("gmFactionGrid").innerHTML=(WORLD.factions||[]).map(x=>recordCard(x.name,"FACTION",x.goal,"Assets: "+x.assets+" · Friction: "+x.friction)).join("");
-  if($("gmThreatGrid")) $("gmThreatGrid").innerHTML=(WORLD.threats||[]).map(x=>recordCard(x.name,x.type,x.note,"Function: "+x.function)).join("");
-  if($("gmSecretGrid")) $("gmSecretGrid").innerHTML=(WORLD.secrets||[]).map(x=>recordCard(x.name,"GM TRUTH",x.truth,"Known by: "+x.whoKnows)).join("");
-  if($("gmSessionBoard")) $("gmSessionBoard").innerHTML=(WORLD.sessions||[]).map(x=>'<article><small>'+esc(x.status)+'</small><h3>'+esc(x.title)+'</h3><p>'+esc(x.body)+'</p></article>').join("");
-  if($("gmReferenceGrid")) { const guides=SOURCE_LENSES.guides||{}; $("gmReferenceGrid").innerHTML=Object.entries(guides).map(([k,g])=>recordCard(g.title||g.label,g.label||k,g.description||"",g.url?"Source linked in NPC records":"Campaign authority")).join("")+(WORLD.reference||[]).map(x=>recordCard(x.name,"REFERENCE",x.body)).join(""); }
+  renderPlaces();
+  if($("gmReferenceGrid")){
+    const guides=SOURCE_LENSES.guides||{};
+    const sourceCards=Object.entries(guides).map(([k,g])=>recordCard(g.title||g.label,g.label||k,g.description||"",g.url?"Source available from NPC comparison panels":"Campaign authority")).join("");
+    const factionCards=(WORLD.factions||[]).map(x=>recordCard(x.name,"FACTION",x.goal,"Assets: "+x.assets+" · Friction: "+x.friction)).join("");
+    const threatCards=(WORLD.threats||[]).map(x=>recordCard(x.name,x.type,x.note,"Function: "+x.function)).join("");
+    const secretCards=(WORLD.secrets||[]).map(x=>recordCard(x.name,"GM TRUTH",x.truth,"Known by: "+x.whoKnows)).join("");
+    const methodCards=(WORLD.reference||[]).map(x=>recordCard(x.name,"RUNNING THE GAME",x.body)).join("");
+    $("gmReferenceGrid").innerHTML=sourceCards+methodCards+factionCards+threatCards+secretCards;
+  }
 }
+
+let selectedPlace=null;
+function placeNpcMatches(place,npc){
+  const hay=[npc.region,npc.location].join(" ").toLowerCase();
+  const name=String(place.name||"").toLowerCase();
+  if(hay.includes(name))return true;
+  if(name==="village of barovia"&&hay.includes("village of barovia"))return true;
+  if(name==="krezk"&&hay.includes("abbey"))return false;
+  return false;
+}
+function renderPlaces(){
+  if(!$("gmPlaceGrid"))return;
+  $("gmPlaceGrid").innerHTML=(WORLD.places||[]).map((p,i)=>{
+    const count=NPC_DB.filter(n=>placeNpcMatches(p,n)).length;
+    return '<button class="gm-place-row '+(selectedPlace===i?"active":"")+'" data-place-index="'+i+'"><div><small>'+esc(p.kind)+'</small><strong>'+esc(p.name)+'</strong><p>'+esc(p.pressure||"")+'</p></div><span>'+count+' people</span></button>';
+  }).join("");
+  $("gmPlaceGrid").querySelectorAll("[data-place-index]").forEach(b=>b.onclick=()=>renderPlaceDetail(Number(b.dataset.placeIndex)));
+}
+function renderPlaceDetail(index){
+  selectedPlace=index;
+  const p=(WORLD.places||[])[index];
+  if(!p||!$("gmPlaceDetail"))return;
+  const people=NPC_DB.filter(n=>placeNpcMatches(p,n));
+  const livePeople=people.map(n=>{
+    const live=liveNpcFor(n)||{};
+    return '<button class="gm-place-person" data-place-npc="'+esc(n.id)+'"><div><strong>'+esc(n.name)+'</strong><small>'+esc(n.role)+'</small></div><span>'+esc(live.status||n.status||"")+'</span></button>';
+  }).join("")||'<p class="gm-dim">No indexed NPCs are attached to this place yet.</p>';
+  $("gmPlaceDetail").innerHTML=
+    '<div class="gm-place-detail-head"><div><div class="eyebrow">'+esc(p.kind)+'</div><h3>'+esc(p.name)+'</h3></div><button id="placeToLive">Use at table</button></div>'+
+    '<section class="gm-place-play"><small>WHAT MATTERS HERE</small><p>'+esc(p.pressure||"No current pressure recorded.")+'</p></section>'+
+    '<section class="gm-place-play"><small>WHAT IT FEELS LIKE</small><p>'+esc(p.summary||"")+'</p></section>'+
+    '<section class="gm-place-people"><small>PEOPLE ATTACHED TO THIS PLACE</small>'+livePeople+'</section>';
+  $("gmPlaceDetail").querySelectorAll("[data-place-npc]").forEach(b=>b.onclick=()=>{setView("people");renderNpcDetail(b.dataset.placeNpc)});
+  $("placeToLive").onclick=()=>setView("live");
+  renderPlaces();
+}
+
 
 let dashboardData=null;
 
@@ -114,6 +153,20 @@ function render(data){
   if($("dashboardNpcCount"))$("dashboardNpcCount").textContent=NPC_DB.length;
   if($("dashboardNpcSummary"))$("dashboardNpcSummary").textContent=NPC_DB.length+' people indexed across Barovia.';
   if($("dashboardStrahdSummary"))$("dashboardStrahdSummary").textContent=(s.overall_posture||"observe")+(s.active_target?" · target: "+s.active_target:"");
+  if($("liveLocation"))$("liveLocation").textContent=c.current_location||"Unknown";
+  if($("livePressure"))$("livePressure").textContent=c.current_pressure||"No immediate pressure recorded.";
+  if($("livePhase"))$("livePhase").textContent=c.campaign_phase||"Unstated";
+  if($("liveStrahd"))$("liveStrahd").textContent=(s.overall_posture||"observe")+(s.active_target?" · "+s.active_target:"");
+  if($("liveClockList"))$("liveClockList").innerHTML=clockHtml;
+  if($("liveNpcList")){
+    const loc=String(c.current_location||"").toLowerCase();
+    const nearby=NPC_DB.filter(n=>loc && ([n.region,n.location].join(" ").toLowerCase().includes(loc)||loc.includes(String(n.region||"").toLowerCase()))).slice(0,12);
+    $("liveNpcList").innerHTML=(nearby.length?nearby:NPC_DB.slice(0,6)).map(n=>{
+      const live=liveNpcFor(n)||{};
+      return '<button class="gm-live-person" data-live-npc="'+esc(n.id)+'"><div><strong>'+esc(n.name)+'</strong><small>'+esc(n.role)+'</small></div><span>'+esc(live.disposition||live.status||n.status||"")+'</span></button>';
+    }).join("");
+    $("liveNpcList").querySelectorAll("[data-live-npc]").forEach(b=>b.onclick=()=>{setView("people");renderNpcDetail(b.dataset.liveNpc)});
+  }
 
 }
 
@@ -274,9 +327,9 @@ function renderNpcDetail(id){
     '<div class="gm-npc-detail-head"><div><div class="eyebrow">'+esc(npc.region||"BAROVIA")+'</div><h3>'+esc(npc.name)+'</h3><p>'+esc(npc.role||"")+'</p></div><span class="gm-badge">'+esc(live.status||npc.status||"Unknown")+'</span></div>'+
     '<div class="gm-npc-tags">'+(npc.tags||[]).map(t=>'<span>'+esc(t)+'</span>').join("")+'</div>'+
     '<div class="gm-npc-facts"><div><small>LOCATION</small><strong>'+esc(live.current_location||npc.location||"Unknown")+'</strong></div><div><small>FACTION</small><strong>'+esc(npc.faction||"None")+'</strong></div><div><small>DISPOSITION</small><strong>'+esc(live.disposition||"Unrecorded")+'</strong></div></div>'+
-    sourceLensHTML(npc)+
-    npcField("Portrayal",npc.portrayal)+npcField("Goals",live.private_motive||npc.goals)+npcField("What they know",npc.knows)+npcField("Relationships",npc.relationships)+npcField("Daggerheart use",npc.daggerheart)+
-    '<section class="gm-npc-field gm-npc-live"><h4>Our Barovia — campaign canon</h4><textarea id="npcCampaignNotes" placeholder="What we have actually chosen for this campaign. Changes from RAW, adopted MandyMod/Reloaded ideas, voice cues, promises, injuries, debts, current plans...">'+esc(notes.notes||"")+'</textarea><div class="gm-npc-note-actions"><button id="saveNpcCampaignNotes">Save Our Barovia</button><span id="npcNoteSaved"></span></div></section>';
+    '<section class="gm-at-table"><div class="eyebrow">AT THE TABLE</div>'+npcField("What they want now",live.private_motive||npc.goals)+npcField("How to play them",npc.portrayal)+npcField("What they know",npc.knows)+npcField("Relationships",npc.relationships)+npcField("Daggerheart use",npc.daggerheart)+'</section>'+
+    '<section class="gm-npc-field gm-npc-live"><h4>Our Barovia — campaign canon</h4><textarea id="npcCampaignNotes" placeholder="What we have actually chosen for this campaign. Current plans, voice cues, promises, injuries, debts, changes from RAW or adopted expansion ideas...">'+esc(notes.notes||"")+'</textarea><div class="gm-npc-note-actions"><button id="saveNpcCampaignNotes">Save Our Barovia</button><span id="npcNoteSaved"></span></div></section>'+
+    '<details class="gm-source-drawer"><summary>RAW / MandyMod / DragnaCarta ideas</summary>'+sourceLensHTML(npc)+'</details>';
   $("saveNpcCampaignNotes").onclick=()=>{
     saveNpcNotes(id,{notes:$("npcCampaignNotes").value,updatedAt:new Date().toISOString()});
     $("npcNoteSaved").textContent="Saved";
@@ -315,6 +368,32 @@ function initNpcDatabase(){
   $("npcDbClear").onclick=()=>{value("npcDbSearch","");value("npcDbRegion","");value("npcDbStatus","");renderNpcDirectory()};
   renderNpcDirectory();
 }
+const LOCAL_WORK_KEY="barovia-gm-working-v1";
+function loadWorking(){
+  try{return JSON.parse(localStorage.getItem(LOCAL_WORK_KEY)||"{}")}catch{return{}}
+}
+function saveWorking(next){
+  const data={...loadWorking(),...next};
+  localStorage.setItem(LOCAL_WORK_KEY,JSON.stringify(data));
+}
+function initWorkingTools(){
+  const data=loadWorking();
+  if($("liveNotes"))$("liveNotes").value=data.liveNotes||"";
+  ["prepOpening","prepPeople","prepPressure","prepDiscoveries"].forEach(id=>{if($(id))$(id).value=data[id]||""});
+  if($("saveLiveNotes"))$("saveLiveNotes").onclick=()=>{
+    saveWorking({liveNotes:$("liveNotes").value});
+    $("liveNoteSaved").textContent="Saved";
+    setTimeout(()=>{if($("liveNoteSaved"))$("liveNoteSaved").textContent=""},1200);
+  };
+  if($("clearLiveNotes"))$("clearLiveNotes").onclick=()=>{$("liveNotes").value="";saveWorking({liveNotes:""})};
+  if($("savePrep"))$("savePrep").onclick=()=>{
+    const next={};["prepOpening","prepPeople","prepPressure","prepDiscoveries"].forEach(id=>next[id]=$(id).value);
+    saveWorking(next);$("prepSaved").textContent="Saved";
+    setTimeout(()=>{if($("prepSaved"))$("prepSaved").textContent=""},1200);
+  };
+}
+
 initNpcDatabase();
 renderWorldReference();
 bindViewNavigation();
+initWorkingTools();
