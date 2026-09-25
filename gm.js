@@ -203,3 +203,75 @@ $("publishBtn").onclick=async()=>{
 
 supabase.auth.onAuthStateChange(()=>setTimeout(authState,0));
 authState();
+
+
+// --- Searchable GM NPC reference database ---
+const NPC_DB=window.BAROVIA_GM_NPCS||[];
+let selectedNpcId=null;
+const NPC_NOTE_KEY="barovia-gm-npc-notes-v1";
+
+function npcNotes(){
+  try{return JSON.parse(localStorage.getItem(NPC_NOTE_KEY)||"{}")}catch{return{}}
+}
+function saveNpcNotes(id,data){
+  const all=npcNotes(); all[id]=data; localStorage.setItem(NPC_NOTE_KEY,JSON.stringify(all));
+}
+function liveNpcFor(npc){
+  const rows=dashboardData?.npcs||[];
+  const norm=s=>String(s||"").trim().toLowerCase();
+  return rows.find(x=>norm(x.name)===norm(npc.name)||norm(x.public_name)===norm(npc.publicName));
+}
+function npcField(label,value){
+  if(!value)return"";
+  return '<section class="gm-npc-field"><h4>'+esc(label)+'</h4><p>'+esc(value)+'</p></section>';
+}
+function renderNpcDetail(id){
+  selectedNpcId=id;
+  const npc=NPC_DB.find(x=>x.id===id);
+  if(!npc)return;
+  const live=liveNpcFor(npc)||{};
+  const notes=npcNotes()[id]||{};
+  $("npcDbDetail").innerHTML=
+    '<div class="gm-npc-detail-head"><div><div class="eyebrow">'+esc(npc.region||"BAROVIA")+'</div><h3>'+esc(npc.name)+'</h3><p>'+esc(npc.role||"")+'</p></div><span class="gm-badge">'+esc(live.status||npc.status||"Unknown")+'</span></div>'+
+    '<div class="gm-npc-tags">'+(npc.tags||[]).map(t=>'<span>'+esc(t)+'</span>').join("")+'</div>'+
+    '<div class="gm-npc-facts"><div><small>LOCATION</small><strong>'+esc(live.current_location||npc.location||"Unknown")+'</strong></div><div><small>FACTION</small><strong>'+esc(npc.faction||"None")+'</strong></div><div><small>DISPOSITION</small><strong>'+esc(live.disposition||"Unrecorded")+'</strong></div></div>'+
+    npcField("Canon reference",npc.canon)+npcField("Portrayal",npc.portrayal)+npcField("Goals",live.private_motive||npc.goals)+npcField("What they know",npc.knows)+npcField("Relationships",npc.relationships)+npcField("Daggerheart use",npc.daggerheart)+
+    '<section class="gm-npc-field gm-npc-live"><h4>Our campaign — private notes</h4><textarea id="npcCampaignNotes" placeholder="Changes from canon, secrets established in play, voice cues, promises, injuries, debts, current plans...">'+esc(notes.notes||"")+'</textarea><div class="gm-npc-note-actions"><button id="saveNpcCampaignNotes">Save private notes</button><span id="npcNoteSaved"></span></div></section>';
+  $("saveNpcCampaignNotes").onclick=()=>{
+    saveNpcNotes(id,{notes:$("npcCampaignNotes").value,updatedAt:new Date().toISOString()});
+    $("npcNoteSaved").textContent="Saved";
+    setTimeout(()=>{if($("npcNoteSaved"))$("npcNoteSaved").textContent=""},1200);
+  };
+  renderNpcDirectory();
+}
+function renderNpcDirectory(){
+  if(!$("npcDbList"))return;
+  const q=($("npcDbSearch").value||"").trim().toLowerCase();
+  const region=$("npcDbRegion").value;
+  const status=$("npcDbStatus").value;
+  const filtered=NPC_DB.filter(npc=>{
+    const live=liveNpcFor(npc)||{};
+    const actualStatus=live.status||npc.status||"";
+    const hay=[npc.name,npc.publicName,npc.location,npc.region,npc.role,npc.faction,npc.canon,...(npc.tags||[])].join(" ").toLowerCase();
+    return (!q||hay.includes(q))&&(!region||npc.region===region)&&(!status||actualStatus===status);
+  }).sort((a,b)=>a.name.localeCompare(b.name));
+  $("npcDbCount").textContent=filtered.length+" / "+NPC_DB.length+" NPCs";
+  $("npcDbList").innerHTML=filtered.map(npc=>{
+    const live=liveNpcFor(npc)||{};
+    return '<button class="gm-npc-row '+(selectedNpcId===npc.id?"active":"")+'" data-npc-id="'+esc(npc.id)+'"><div><strong>'+esc(npc.name)+'</strong><small>'+esc(npc.role)+' · '+esc(live.current_location||npc.location)+'</small></div><span>'+esc(live.status||npc.status||"")+'</span></button>';
+  }).join("")||'<div class="gm-npc-empty"><p>No NPCs match those filters.</p></div>';
+  $("npcDbList").querySelectorAll("[data-npc-id]").forEach(b=>b.onclick=()=>renderNpcDetail(b.dataset.npcId));
+}
+function initNpcDatabase(){
+  if(!$("npcDbList"))return;
+  const regions=[...new Set(NPC_DB.map(x=>x.region).filter(Boolean))].sort();
+  const statuses=[...new Set(NPC_DB.map(x=>x.status).filter(Boolean))].sort();
+  $("npcDbRegion").innerHTML='<option value="">All locations</option>'+regions.map(x=>'<option>'+esc(x)+'</option>').join("");
+  $("npcDbStatus").innerHTML='<option value="">All statuses</option>'+statuses.map(x=>'<option>'+esc(x)+'</option>').join("");
+  $("npcDbSearch").addEventListener("input",renderNpcDirectory);
+  $("npcDbRegion").addEventListener("change",renderNpcDirectory);
+  $("npcDbStatus").addEventListener("change",renderNpcDirectory);
+  $("npcDbClear").onclick=()=>{value("npcDbSearch","");value("npcDbRegion","");value("npcDbStatus","");renderNpcDirectory()};
+  renderNpcDirectory();
+}
+initNpcDatabase();
