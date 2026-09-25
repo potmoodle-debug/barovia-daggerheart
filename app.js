@@ -34,6 +34,12 @@ function renderState(){
 function renderThreads(){
   const grid=document.getElementById("threadGrid");
   grid.innerHTML="";
+  const featuredTitle=document.getElementById("featuredThreadTitle");
+  const featuredText=document.getElementById("featuredThreadText");
+  if(THREADS[0]){
+    if(featuredTitle)featuredTitle.textContent=THREADS[0].title||"Current possibility";
+    if(featuredText)featuredText.textContent=THREADS[0].text||"";
+  }
   THREADS.forEach(t=>{
     const b=document.createElement("button");
     b.className="card";
@@ -46,6 +52,12 @@ function renderThreads(){
 function renderDiscoveries(){
   const grid=document.getElementById("discoveryGrid");
   grid.innerHTML="";
+  const featuredTitle=document.getElementById("featuredDiscoveryTitle");
+  const featuredText=document.getElementById("featuredDiscoveryText");
+  if(DISC[0]){
+    if(featuredTitle)featuredTitle.textContent=DISC[0].title||"Latest discovery";
+    if(featuredText)featuredText.textContent=DISC[0].text||"";
+  }
   DISC.forEach(d=>{
     const b=document.createElement("button");
     b.className="card";
