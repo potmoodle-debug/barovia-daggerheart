@@ -74,3 +74,26 @@
 @media(max-width:620px){
   .site-switch-float{right:12px;bottom:12px;min-height:42px;padding:0 13px}
 }
+
+/* GM NPC database */
+.gm-npc-database{margin-top:16px}
+.gm-npc-count{font:20px Georgia,serif;color:#c2aa79}
+.gm-npc-tools{display:grid;grid-template-columns:minmax(260px,2fr) 1fr 1fr auto;gap:8px;margin-bottom:14px}
+.gm-npc-tools input,.gm-npc-tools select{width:100%;background:#0f0b0d;border:1px solid #3f2b33;color:#eee5e8;padding:10px 11px;outline:none}
+.gm-npc-layout{display:grid;grid-template-columns:minmax(330px,.85fr) minmax(0,1.6fr);gap:14px;min-height:620px}
+.gm-npc-directory{border:1px solid #342229;background:#0c090a;max-height:720px;overflow:auto}
+.gm-npc-row{width:100%;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;text-align:left;border:0;border-bottom:1px solid #2d1e24;background:#100c0e;color:#e9dfe2;padding:12px 13px}
+.gm-npc-row:hover,.gm-npc-row.active{background:#211319;border-left:3px solid #a83b54;padding-left:10px}
+.gm-npc-row strong{display:block;font:18px Georgia,serif}
+.gm-npc-row small{display:block;color:#88777d;font-size:9px;margin-top:4px}
+.gm-npc-row>span{color:#b99aa4;font-size:8px;text-transform:uppercase;letter-spacing:.1em}
+.gm-npc-detail{border:1px solid #3a272e;background:radial-gradient(circle at 100% 0,rgba(127,36,56,.12),transparent 32%),#100c0e;padding:22px;overflow:auto;max-height:720px}
+.gm-npc-detail-head{display:flex;justify-content:space-between;gap:18px;align-items:start;border-bottom:1px solid #352229;padding-bottom:16px}
+.gm-npc-detail-head h3{font:36px Georgia,serif;margin:5px 0 3px}.gm-npc-detail-head p{margin:0;color:#9f9095}
+.gm-npc-tags{display:flex;flex-wrap:wrap;gap:6px;margin:13px 0}.gm-npc-tags span{border:1px solid #493139;padding:4px 7px;color:#a9959b;font-size:8px;text-transform:uppercase;letter-spacing:.09em}
+.gm-npc-facts{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #35242a;margin:14px 0 18px}.gm-npc-facts div{padding:11px;border-right:1px solid #35242a}.gm-npc-facts div:last-child{border-right:0}.gm-npc-facts small{display:block;color:#796970;font-size:8px;letter-spacing:.12em}.gm-npc-facts strong{display:block;font:15px Georgia,serif;margin-top:4px}
+.gm-npc-field{padding:13px 0;border-top:1px solid #2f2025}.gm-npc-field h4{margin:0 0 6px;color:#c2aa79;font-size:9px;text-transform:uppercase;letter-spacing:.14em}.gm-npc-field p{margin:0;color:#c1b4b8;line-height:1.55;font-size:13px}
+.gm-npc-live textarea{width:100%;min-height:120px;background:#0b0809;border:1px solid #493139;color:#eee5e8;padding:11px;resize:vertical}.gm-npc-note-actions{display:flex;align-items:center;gap:10px;margin-top:8px}.gm-npc-note-actions span{font-size:9px;color:#c2aa79}
+.gm-npc-empty{padding:30px;color:#8e7f84}.gm-npc-empty h3{font:28px Georgia,serif;color:#ddd0d4;margin:6px 0}.gm-npc-empty p{line-height:1.6}
+@media(max-width:900px){.gm-npc-tools{grid-template-columns:1fr 1fr}.gm-npc-layout{grid-template-columns:1fr}.gm-npc-directory,.gm-npc-detail{max-height:none}.gm-npc-facts{grid-template-columns:1fr}.gm-npc-facts div{border-right:0;border-bottom:1px solid #35242a}}
+@media(max-width:560px){.gm-npc-tools{grid-template-columns:1fr}}
