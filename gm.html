@@ -7,7 +7,7 @@
 <title>Barovia — GM Campaign</title>
 <link rel="stylesheet" href="style.css?v=2">
 <link rel="stylesheet" href="barovia-polish.css?v=1">
-<link rel="stylesheet" href="gm.css?v=6">
+<link rel="stylesheet" href="gm.css?v=7">
 </head>
 <body class="gm-body">
 <div class="gm-app">
@@ -19,7 +19,7 @@
 
     <nav class="gm-nav" aria-label="GM campaign sections">
       <div class="gm-nav-group"><small>RUN THE GAME</small>
-        <button class="gm-nav-link active" data-gm-view="dashboard"><span>◆</span>Dashboard</button>
+        <button class="gm-nav-link active" data-gm-view="dashboard"><span>◆</span>Explore</button>
         <button class="gm-nav-link" data-gm-view="live"><span>▶</span>Live Play</button>
         <button class="gm-nav-link" data-gm-view="threads"><span>⌁</span>Threads</button>
         <button class="gm-nav-link" data-gm-view="prep"><span>◫</span>Prep</button>
@@ -71,38 +71,58 @@
 
       <section id="dashboard" class="hidden">
         <section class="gm-view active" data-view-panel="dashboard">
-          <div class="gm-hero">
-            <div>
-              <div class="eyebrow">AT THE TABLE</div>
-              <h2>The valley at a glance</h2>
-              <p>Immediate state, active pressure and the things most likely to matter in the next scene.</p>
+          <section class="gm-explore-hero">
+            <div class="gm-explore-title">
+              <div class="eyebrow">THINKING ABOUT THE GAME</div>
+              <h2>Where does your mind go?</h2>
+              <p>Start with a person, place, secret, pressure or half-formed thought. Follow whatever catches your attention.</p>
             </div>
-            <div class="gm-hero-sigil">R</div>
-          </div>
-
-          <section class="gm-status-strip">
-            <div><small>CAMPAIGN</small><strong id="campaignStatus">—</strong></div>
-            <div><small>STRAHD</small><strong id="strahdStatus">—</strong></div>
-            <div><small>NPCs IN ARCHIVE</small><strong id="dashboardNpcCount">—</strong></div>
+            <div class="gm-explore-search">
+              <input id="exploreSearch" autocomplete="off" placeholder="I’m thinking about Ireena… Vallaki… the Abbey… Strahd…">
+              <div id="exploreResults" class="gm-explore-results hidden"></div>
+            </div>
           </section>
 
-          <div class="gm-dashboard-grid">
-            <button class="gm-jump-card gm-jump-card-live" data-gm-view="live"><small>LIVE PLAY</small><strong>Run the Scene</strong><p>Current location, people nearby, active pressure and scratch notes.</p></button>
-            <button class="gm-jump-card" data-gm-view="places"><small>PLACES</small><strong>Valley Atlas</strong><p>Settlements, ruins, roads and dangerous ground.</p></button>
-            <button class="gm-jump-card gm-jump-card-danger" data-gm-view="strahd"><small>STRAHD</small><strong>Current Pressure</strong><p id="dashboardStrahdSummary">What is he doing, and why now?</p></button>
-            <button class="gm-jump-card" data-gm-view="threads"><small>THREADS</small><strong>Active Situations</strong><p>What is moving even when the party does nothing?</p></button>
-          </div>
+          <section class="gm-story-now">
+            <div class="gm-story-now-main">
+              <small>RIGHT NOW</small>
+              <h3 id="exploreNowLocation">Somewhere in Barovia</h3>
+              <p id="exploreNowPressure">The valley is waiting.</p>
+            </div>
+            <div class="gm-story-now-strahd">
+              <small>STRAHD'S SHADOW</small>
+              <strong id="exploreNowStrahd">Observe</strong>
+              <p id="exploreStrahdThought">What has caught his attention?</p>
+            </div>
+          </section>
 
-          <div class="gm-grid two">
-            <section class="gm-panel">
-              <div class="gm-panel-head"><div><div class="eyebrow">LIVE STATE</div><h2>Current campaign</h2></div><button class="gm-mini-jump" data-gm-view="campaign">Open</button></div>
-              <div id="dashboardCampaignReadout" class="gm-readout"></div>
-            </section>
-            <section class="gm-panel">
-              <div class="gm-panel-head"><div><div class="eyebrow">REACTIVE WORLD</div><h2>Threat clocks</h2></div><button class="gm-mini-jump" data-gm-view="threads">Open</button></div>
-              <div id="dashboardClockList" class="gm-stack compact"></div>
-            </section>
-          </div>
+          <section class="gm-explore-section">
+            <div class="gm-explore-section-head">
+              <div><div class="eyebrow">FOLLOW A THOUGHT</div><h3>Things tugging at the story</h3></div>
+              <button id="reshuffleExplore" class="gm-quiet-btn">Show me something else</button>
+            </div>
+            <div id="exploreTrail" class="gm-explore-trail"></div>
+          </section>
+
+          <section class="gm-explore-split">
+            <div class="gm-explore-section">
+              <div class="gm-explore-section-head"><div><div class="eyebrow">UNFINISHED BUSINESS</div><h3>Loose ends</h3></div></div>
+              <div id="exploreLooseEnds" class="gm-loose-ends"></div>
+            </div>
+            <div class="gm-explore-section gm-what-if">
+              <div class="gm-explore-section-head"><div><div class="eyebrow">GM SPARK</div><h3>What if…</h3></div></div>
+              <blockquote id="exploreSpark">What happens if the thing everyone assumes is safe stops being safe?</blockquote>
+              <button id="nextSpark" class="gm-quiet-btn">Another thought</button>
+            </div>
+          </section>
+
+          <section class="gm-explore-section">
+            <div class="gm-explore-section-head">
+              <div><div class="eyebrow">PEOPLE NEAR THE FIRE</div><h3>Faces worth thinking about</h3></div>
+              <button class="gm-quiet-btn" data-gm-view="people">All people</button>
+            </div>
+            <div id="explorePeople" class="gm-explore-people"></div>
+          </section>
         </section>
 
         <section class="gm-view" data-view-panel="live">
@@ -306,6 +326,6 @@
 <script src="gm-npcs.js?v=1"></script>
 <script src="gm-world.js?v=1"></script>
 <script src="gm-sources.js?v=1"></script>
-<script type="module" src="gm.js?v=6"></script>
+<script type="module" src="gm.js?v=7"></script>
 </body>
 </html>
