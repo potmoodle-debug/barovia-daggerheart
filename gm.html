@@ -106,6 +106,25 @@
         </section>
       </div>
 
+      <section class="gm-panel gm-npc-database">
+        <div class="gm-panel-head">
+          <div><div class="eyebrow">BAROVIA CAST</div><h2>NPC Database</h2></div>
+          <div class="gm-npc-count" id="npcDbCount">—</div>
+        </div>
+        <div class="gm-npc-tools">
+          <input id="npcDbSearch" placeholder="Search name, place, faction, role or tag">
+          <select id="npcDbRegion"><option value="">All locations</option></select>
+          <select id="npcDbStatus"><option value="">All statuses</option></select>
+          <button id="npcDbClear" class="secondary">Clear</button>
+        </div>
+        <div class="gm-npc-layout">
+          <div id="npcDbList" class="gm-npc-directory"></div>
+          <article id="npcDbDetail" class="gm-npc-detail">
+            <div class="gm-npc-empty"><div class="eyebrow">PRIVATE REFERENCE</div><h3>Select an NPC</h3><p>Canon reference, portrayal, goals, knowledge, relationships, Daggerheart notes and your campaign-specific live notes appear here.</p></div>
+          </article>
+        </div>
+      </section>
+
       <div class="gm-grid two">
         <section class="gm-panel">
           <div class="gm-panel-head"><div><div class="eyebrow">REACTIVE WORLD</div><h2>Threat clocks</h2></div></div>
@@ -149,7 +168,7 @@
   </main>
 </div>
 
-<script src="gm-config.js?v=1"></script>
+<script src="gm-config.js?v=1"></script>\n<script src="gm-npcs.js?v=1"></script>
 <script type="module" src="gm.js?v=1"></script>
 <a class="site-switch-float site-switch-player" href="./">← Player Site</a>
 </body>
