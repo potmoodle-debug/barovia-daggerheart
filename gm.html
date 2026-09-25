@@ -7,7 +7,7 @@
 <title>Barovia — GM Campaign</title>
 <link rel="stylesheet" href="style.css?v=2">
 <link rel="stylesheet" href="barovia-polish.css?v=1">
-<link rel="stylesheet" href="gm.css?v=8">
+<link rel="stylesheet" href="gm.css?v=9">
 </head>
 <body class="gm-body">
 <div class="gm-app">
@@ -37,6 +37,7 @@
       </div>
       <div class="gm-nav-group"><small>CAMPAIGN</small>
         <button class="gm-nav-link" data-gm-view="campaign"><span>◈</span>Campaign State</button>
+        <button class="gm-nav-link" data-gm-view="visuals"><span>▣</span>Visual Library</button>
         <button class="gm-nav-link" data-gm-view="reference"><span>≡</span>Behind the Screen</button>
       </div>
     </nav>
@@ -352,6 +353,19 @@
           <div class="gm-prep-actions"><button id="savePrep">Save prep</button><span id="prepSaved"></span></div>
         </section>
 
+        <section class="gm-view" data-view-panel="visuals">
+          <div class="gm-section-intro">
+            <div><div class="eyebrow">CINEMATOGRAPHY PLAN</div><h2>Visual Library</h2><p>Every image has a job. The camera, lens, viewpoint and lighting are chosen for what the image needs to communicate to the GM or players.</p></div>
+            <div class="gm-big-stat"><strong id="shotCount">—</strong><small>PLANNED SHOTS</small></div>
+          </div>
+          <div class="gm-shot-tools">
+            <select id="shotAudience"><option value="">All audiences</option><option>Player</option><option>Both</option><option>DM</option></select>
+            <select id="shotType"><option value="">All shot types</option></select>
+            <button id="shotClear" class="secondary">Clear</button>
+          </div>
+          <div id="gmShotGrid" class="gm-shot-grid"></div>
+        </section>
+
         <section class="gm-view" data-view-panel="reference">
           <div class="gm-section-intro"><div><div class="eyebrow">BEHIND THE SCREEN</div><h2>Reference</h2><p>RAW, MandyMod, DragnaCarta, factions, threats and lore live here when you need them — not in the way while you run the game.</p></div></div>
           <div id="gmReferenceGrid" class="gm-record-grid"></div>
@@ -365,6 +379,7 @@
 <script src="gm-npcs.js?v=1"></script>
 <script src="gm-world.js?v=1"></script>
 <script src="gm-sources.js?v=1"></script>
-<script type="module" src="gm.js?v=8"></script>
+<script src="gm-shots.js?v=1"></script>
+<script type="module" src="gm.js?v=9"></script>
 </body>
 </html>
