@@ -269,3 +269,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .top-actions{display:none}
   .sidebar-gm-link{display:grid}
 }
+.site-switch-float{
+  position:fixed;right:18px;bottom:18px;z-index:10020;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:0 16px;
+  border:1px solid #a44b61;
+  background:linear-gradient(180deg,#381923,#241118);
+  color:#fff0f4;text-decoration:none;
+  text-transform:uppercase;letter-spacing:.1em;
+  font-size:9px;font-weight:900;
+  box-shadow:0 14px 35px rgba(0,0,0,.42);
+  backdrop-filter:blur(8px);
+}
+.site-switch-float:hover{
+  border-color:#d06a82;background:#4a1f2d;color:#fff;
+  transform:translateY(-2px);
+}
+@media(max-width:620px){
+  .site-switch-float{right:12px;bottom:12px;min-height:42px;padding:0 13px}
+}
