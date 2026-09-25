@@ -7,7 +7,7 @@
 <title>Barovia — GM Campaign</title>
 <link rel="stylesheet" href="style.css?v=2">
 <link rel="stylesheet" href="barovia-polish.css?v=1">
-<link rel="stylesheet" href="gm.css?v=7">
+<link rel="stylesheet" href="gm.css?v=8">
 </head>
 <body class="gm-body">
 <div class="gm-app">
@@ -17,9 +17,16 @@
       <span><small>PRIVATE CAMPAIGN</small><strong>BAROVIA</strong><em>Game Master Campaign</em></span>
     </button>
 
+    <label class="gm-sidebar-search">
+      <span>Search Barovia <kbd>/</kbd></span>
+      <input id="gmGlobalSearch" type="search" placeholder="Person, place, secret…" autocomplete="off">
+    </label>
+    <div id="gmGlobalResults" class="gm-sidebar-results"></div>
+
     <nav class="gm-nav" aria-label="GM campaign sections">
       <div class="gm-nav-group"><small>RUN THE GAME</small>
         <button class="gm-nav-link active" data-gm-view="dashboard"><span>◆</span>Explore</button>
+        <button class="gm-nav-link" data-gm-view="brain"><span>◎</span>Campaign Brain</button>
         <button class="gm-nav-link" data-gm-view="live"><span>▶</span>Live Play</button>
         <button class="gm-nav-link" data-gm-view="threads"><span>⌁</span>Threads</button>
         <button class="gm-nav-link" data-gm-view="prep"><span>◫</span>Prep</button>
@@ -71,16 +78,29 @@
 
       <section id="dashboard" class="hidden">
         <section class="gm-view active" data-view-panel="dashboard">
-          <section class="gm-explore-hero">
-            <div class="gm-explore-title">
-              <div class="eyebrow">THINKING ABOUT THE GAME</div>
-              <h2>Where does your mind go?</h2>
-              <p>Start with a person, place, secret, pressure or half-formed thought. Follow whatever catches your attention.</p>
+          <section class="gm-campaign-hero">
+            <img src="assets/barovia-mockup-reference.jpg" alt="" class="gm-campaign-hero-image">
+            <div class="gm-campaign-hero-shade"></div>
+            <div class="gm-campaign-hero-copy">
+              <div class="eyebrow">YOUR BAROVIA</div>
+              <h2>Follow what interests you.</h2>
+              <p>People, places, threats and secrets are connected. Start anywhere and let the campaign pull you somewhere else.</p>
+              <div class="gm-campaign-hero-actions">
+                <button data-gm-view="brain">Open Campaign Brain</button>
+                <button data-gm-view="live">Run Live Play</button>
+              </div>
+              <div class="gm-campaign-ledger">
+                <span><strong id="exploreRecordCount">—</strong> records</span>
+                <span><strong id="exploreConnectionCount">—</strong> connections</span>
+                <span><strong id="exploreClockCount">—</strong> active threads</span>
+              </div>
             </div>
-            <div class="gm-explore-search">
-              <input id="exploreSearch" autocomplete="off" placeholder="I’m thinking about Ireena… Vallaki… the Abbey… Strahd…">
-              <div id="exploreResults" class="gm-explore-results hidden"></div>
-            </div>
+          </section>
+
+          <section class="gm-home-search">
+            <div class="eyebrow">GO STRAIGHT TO A THOUGHT</div>
+            <input id="exploreSearch" autocomplete="off" placeholder="I’m thinking about Ireena… Vallaki… the Abbey… Strahd…">
+            <div id="exploreResults" class="gm-explore-results hidden"></div>
           </section>
 
           <section class="gm-story-now">
@@ -98,7 +118,7 @@
 
           <section class="gm-explore-section">
             <div class="gm-explore-section-head">
-              <div><div class="eyebrow">FOLLOW A THOUGHT</div><h3>Things tugging at the story</h3></div>
+              <div><div class="eyebrow">CURRENT POSSIBILITIES</div><h3>What could happen next?</h3></div>
               <button id="reshuffleExplore" class="gm-quiet-btn">Show me something else</button>
             </div>
             <div id="exploreTrail" class="gm-explore-trail"></div>
@@ -122,6 +142,25 @@
               <button class="gm-quiet-btn" data-gm-view="people">All people</button>
             </div>
             <div id="explorePeople" class="gm-explore-people"></div>
+          </section>
+        </section>
+
+        <section class="gm-view" data-view-panel="brain">
+          <section class="gm-brain-banner">
+            <img src="assets/barovia-mockup-reference.jpg" alt="">
+            <div></div>
+            <span>Navigate Barovia by what is connected, not by folders.</span>
+          </section>
+          <div class="gm-section-intro gm-brain-intro">
+            <div><div class="eyebrow">RELATIONSHIP VIEW</div><h2>Campaign Brain</h2><p>Choose a person or place. The site shows what directly touches it; click a connection to move the focus.</p></div>
+            <button id="brainBackBtn" class="gm-quiet-btn">← Previous focus</button>
+          </div>
+          <div class="gm-brain-tools">
+            <input id="brainChooser" placeholder="Focus on Strahd, Ireena, Vallaki…">
+            <button id="brainRandom" class="secondary">Surprise me</button>
+          </div>
+          <section id="gmBrain" class="gm-brain">
+            <div class="gm-brain-empty">Choose something to begin exploring Barovia by connection.</div>
           </section>
         </section>
 
@@ -326,6 +365,6 @@
 <script src="gm-npcs.js?v=1"></script>
 <script src="gm-world.js?v=1"></script>
 <script src="gm-sources.js?v=1"></script>
-<script type="module" src="gm.js?v=7"></script>
+<script type="module" src="gm.js?v=8"></script>
 </body>
 </html>
