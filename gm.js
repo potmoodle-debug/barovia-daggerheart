@@ -9,6 +9,7 @@ const supabase=createClient(SUPABASE_URL,PUBLISHABLE_KEY);
 const $=id=>document.getElementById(id);
 
 const WORLD=window.BAROVIA_GM_WORLD||{};
+const SOURCE_LENSES=window.BAROVIA_SOURCE_LENSES||{guides:{},npcs:{}};
 const VIEW_META={
   dashboard:["AT THE TABLE","Dashboard"],
   sessions:["PREP → PLAY → CANON","Sessions"],
@@ -46,7 +47,7 @@ function renderWorldReference(){
   if($("gmThreatGrid")) $("gmThreatGrid").innerHTML=(WORLD.threats||[]).map(x=>recordCard(x.name,x.type,x.note,"Function: "+x.function)).join("");
   if($("gmSecretGrid")) $("gmSecretGrid").innerHTML=(WORLD.secrets||[]).map(x=>recordCard(x.name,"GM TRUTH",x.truth,"Known by: "+x.whoKnows)).join("");
   if($("gmSessionBoard")) $("gmSessionBoard").innerHTML=(WORLD.sessions||[]).map(x=>'<article><small>'+esc(x.status)+'</small><h3>'+esc(x.title)+'</h3><p>'+esc(x.body)+'</p></article>').join("");
-  if($("gmReferenceGrid")) $("gmReferenceGrid").innerHTML=(WORLD.reference||[]).map(x=>recordCard(x.name,"REFERENCE",x.body)).join("");
+  if($("gmReferenceGrid")) { const guides=SOURCE_LENSES.guides||{}; $("gmReferenceGrid").innerHTML=Object.entries(guides).map(([k,g])=>recordCard(g.title||g.label,g.label||k,g.description||"",g.url?"Source linked in NPC records":"Campaign authority")).join("")+(WORLD.reference||[]).map(x=>recordCard(x.name,"REFERENCE",x.body)).join(""); }
 }
 
 let dashboardData=null;
@@ -248,6 +249,21 @@ function npcField(label,value){
   if(!value)return"";
   return '<section class="gm-npc-field"><h4>'+esc(label)+'</h4><p>'+esc(value)+'</p></section>';
 }
+function sourceLensHTML(npc){
+  const guide=SOURCE_LENSES.guides||{};
+  const notes=SOURCE_LENSES.npcs?.[npc.id]||{};
+  const lens=(key,title,body,url="")=>{
+    const content=body||"No specific notes added for this NPC yet.";
+    const link=url?'<a href="'+esc(url)+'" target="_blank" rel="noopener">Open source</a>':"";
+    return '<section class="gm-source-lens gm-source-'+esc(key)+'"><div class="gm-source-head"><span>'+esc(title)+'</span>'+link+'</div><p>'+esc(content)+'</p></section>';
+  };
+  return '<div class="gm-source-compare">'+
+    lens("raw",guide.raw?.label||"RAW",npc.canon,guide.raw?.url)+
+    lens("mandymod",guide.mandymod?.label||"MANDYMOD",notes.mandymod,guide.mandymod?.url)+
+    lens("dragna",guide.dragna?.label||"DRAGNACARTA",notes.dragna,guide.dragna?.url)+
+    lens("ours",guide.ours?.label||"OUR BAROVIA","The campaign-canon choice is recorded below. This is the version we actually run.")+
+  '</div>';
+}
 function renderNpcDetail(id){
   selectedNpcId=id;
   const npc=NPC_DB.find(x=>x.id===id);
@@ -258,8 +274,9 @@ function renderNpcDetail(id){
     '<div class="gm-npc-detail-head"><div><div class="eyebrow">'+esc(npc.region||"BAROVIA")+'</div><h3>'+esc(npc.name)+'</h3><p>'+esc(npc.role||"")+'</p></div><span class="gm-badge">'+esc(live.status||npc.status||"Unknown")+'</span></div>'+
     '<div class="gm-npc-tags">'+(npc.tags||[]).map(t=>'<span>'+esc(t)+'</span>').join("")+'</div>'+
     '<div class="gm-npc-facts"><div><small>LOCATION</small><strong>'+esc(live.current_location||npc.location||"Unknown")+'</strong></div><div><small>FACTION</small><strong>'+esc(npc.faction||"None")+'</strong></div><div><small>DISPOSITION</small><strong>'+esc(live.disposition||"Unrecorded")+'</strong></div></div>'+
-    npcField("Canon reference",npc.canon)+npcField("Portrayal",npc.portrayal)+npcField("Goals",live.private_motive||npc.goals)+npcField("What they know",npc.knows)+npcField("Relationships",npc.relationships)+npcField("Daggerheart use",npc.daggerheart)+
-    '<section class="gm-npc-field gm-npc-live"><h4>Our campaign — private notes</h4><textarea id="npcCampaignNotes" placeholder="Changes from canon, secrets established in play, voice cues, promises, injuries, debts, current plans...">'+esc(notes.notes||"")+'</textarea><div class="gm-npc-note-actions"><button id="saveNpcCampaignNotes">Save private notes</button><span id="npcNoteSaved"></span></div></section>';
+    sourceLensHTML(npc)+
+    npcField("Portrayal",npc.portrayal)+npcField("Goals",live.private_motive||npc.goals)+npcField("What they know",npc.knows)+npcField("Relationships",npc.relationships)+npcField("Daggerheart use",npc.daggerheart)+
+    '<section class="gm-npc-field gm-npc-live"><h4>Our Barovia — campaign canon</h4><textarea id="npcCampaignNotes" placeholder="What we have actually chosen for this campaign. Changes from RAW, adopted MandyMod/Reloaded ideas, voice cues, promises, injuries, debts, current plans...">'+esc(notes.notes||"")+'</textarea><div class="gm-npc-note-actions"><button id="saveNpcCampaignNotes">Save Our Barovia</button><span id="npcNoteSaved"></span></div></section>';
   $("saveNpcCampaignNotes").onclick=()=>{
     saveNpcNotes(id,{notes:$("npcCampaignNotes").value,updatedAt:new Date().toISOString()});
     $("npcNoteSaved").textContent="Saved";
