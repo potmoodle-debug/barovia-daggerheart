@@ -248,3 +248,5 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(max-width:620px){
   .site-switch-float{right:12px;bottom:12px;min-height:42px;padding:0 13px}
 }
+/* v3: single GM switch source of truth */
+.gm-switch,.sidebar-gm-link{display:none!important}
