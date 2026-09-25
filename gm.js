@@ -7,6 +7,48 @@ const GM_RETURN_URL="https://potmoodle-debug.github.io/barovia-daggerheart/gm.ht
 const supabase=createClient(SUPABASE_URL,PUBLISHABLE_KEY);
 
 const $=id=>document.getElementById(id);
+
+const WORLD=window.BAROVIA_GM_WORLD||{};
+const VIEW_META={
+  dashboard:["AT THE TABLE","Dashboard"],
+  sessions:["PREP → PLAY → CANON","Sessions"],
+  threads:["MOVING WITHOUT THE PARTY","Threads"],
+  people:["THE CAST","People"],
+  places:["THE VALLEY","Places"],
+  factions:["POWER & LOYALTY","Factions"],
+  threats:["DANGER","Threats"],
+  secrets:["WHAT IS ACTUALLY TRUE","Secrets & Lore"],
+  strahd:["THE LAND'S MASTER","Strahd"],
+  campaign:["CANON IN MOTION","Campaign State"],
+  reference:["BEHIND THE SCREEN","Reference"]
+};
+
+function setView(name){
+  document.querySelectorAll(".gm-view").forEach(v=>v.classList.toggle("active",v.dataset.viewPanel===name));
+  document.querySelectorAll(".gm-nav-link").forEach(b=>b.classList.toggle("active",b.dataset.gmView===name));
+  const meta=VIEW_META[name]||VIEW_META.dashboard;
+  text("gmViewEyebrow",meta[0]); text("gmViewTitle",meta[1]);
+  document.body.classList.remove("gm-nav-open");
+  location.hash="gm-"+name;
+}
+function bindViewNavigation(){
+  document.querySelectorAll("[data-gm-view]").forEach(b=>b.onclick=()=>setView(b.dataset.gmView));
+  $("gmMenuBtn").onclick=()=>document.body.classList.toggle("gm-nav-open");
+  const requested=(location.hash||"").replace("#gm-","");
+  setView(VIEW_META[requested]?requested:"dashboard");
+}
+function recordCard(title,kicker,body,meta=""){
+  return '<article class="gm-record-card"><small>'+esc(kicker)+'</small><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p>'+(meta?'<div class="gm-record-meta">'+esc(meta)+'</div>':'')+'</article>';
+}
+function renderWorldReference(){
+  if($("gmPlaceGrid")) $("gmPlaceGrid").innerHTML=(WORLD.places||[]).map(x=>recordCard(x.name,x.kind,x.summary,x.pressure)).join("");
+  if($("gmFactionGrid")) $("gmFactionGrid").innerHTML=(WORLD.factions||[]).map(x=>recordCard(x.name,"FACTION",x.goal,"Assets: "+x.assets+" · Friction: "+x.friction)).join("");
+  if($("gmThreatGrid")) $("gmThreatGrid").innerHTML=(WORLD.threats||[]).map(x=>recordCard(x.name,x.type,x.note,"Function: "+x.function)).join("");
+  if($("gmSecretGrid")) $("gmSecretGrid").innerHTML=(WORLD.secrets||[]).map(x=>recordCard(x.name,"GM TRUTH",x.truth,"Known by: "+x.whoKnows)).join("");
+  if($("gmSessionBoard")) $("gmSessionBoard").innerHTML=(WORLD.sessions||[]).map(x=>'<article><small>'+esc(x.status)+'</small><h3>'+esc(x.title)+'</h3><p>'+esc(x.body)+'</p></article>').join("");
+  if($("gmReferenceGrid")) $("gmReferenceGrid").innerHTML=(WORLD.reference||[]).map(x=>recordCard(x.name,"REFERENCE",x.body)).join("");
+}
+
 let dashboardData=null;
 
 async function session(){
@@ -40,14 +82,15 @@ function item(title,meta,badge=""){
 }
 
 function render(data){
-  dashboardData=data;\n  if(typeof renderNpcDirectory==="function")renderNpcDirectory();
+  dashboardData=data;
+  if(typeof renderNpcDirectory==="function")renderNpcDirectory();
   const c=data.campaign||{};
   const s=data.strahd||{};
   const snap=data.snapshot||{};
 
   text("campaignStatus",(c.campaign_phase||"Unstated")+" · "+(c.current_location||"Unknown"));
   text("strahdStatus",(s.overall_posture||"observe")+(s.active_target?" · "+s.active_target:""));
-  text("snapshotStatus","Revision "+(snap.revision??0));
+
 
   value("campaignLocation",c.current_location);
   value("campaignPressure",c.current_pressure);
@@ -63,8 +106,14 @@ function render(data){
 
   $("attentionList").innerHTML=(data.attention||[]).map(x=>item(x.character_key,x.interest_reason||x.next_pressure||"No private note",x.stage)).join("")||item("No character attention yet","Create one below");
   $("npcList").innerHTML=(data.npcs||[]).map(x=>item(x.public_name||x.name,(x.current_location||"Unknown location")+(x.status?" · "+x.status:""),x.disposition||"")).join("")||item("No NPC states yet","Add one below");
-  $("clockList").innerHTML=(data.clocks||[]).map(x=>item(x.label,(x.owner||"No owner")+" · "+x.current_step+"/"+x.max_step,x.visibility)).join("")||item("No clocks yet","Add one below");
-  $("revelationList").innerHTML=(data.revelations||[]).slice(0,12).map(x=>item(x.subject,x.kind,x.status)).join("")||item("No queued revelations","Approved player-safe changes appear here");
+  const clockHtml=(data.clocks||[]).map(x=>item(x.label,(x.owner||"No owner")+" · "+x.current_step+"/"+x.max_step,x.visibility)).join("")||item("No clocks yet","Add one below");
+  $("clockList").innerHTML=clockHtml;
+  if($("dashboardClockList"))$("dashboardClockList").innerHTML=clockHtml;
+  if($("dashboardCampaignReadout"))$("dashboardCampaignReadout").innerHTML='<p><small>LOCATION</small><strong>'+esc(c.current_location||"Unknown")+'</strong></p><p><small>PRESSURE</small><strong>'+esc(c.current_pressure||"None recorded")+'</strong></p><p><small>PHASE</small><strong>'+esc(c.campaign_phase||"Unstated")+'</strong></p>';
+  if($("dashboardNpcCount"))$("dashboardNpcCount").textContent=NPC_DB.length;
+  if($("dashboardNpcSummary"))$("dashboardNpcSummary").textContent=NPC_DB.length+' people indexed across Barovia.';
+  if($("dashboardStrahdSummary"))$("dashboardStrahdSummary").textContent=(s.overall_posture||"observe")+(s.active_target?" · target: "+s.active_target:"");
+
 }
 
 async function refresh(){
@@ -256,6 +305,7 @@ function renderNpcDirectory(){
     return (!q||hay.includes(q))&&(!region||npc.region===region)&&(!status||actualStatus===status);
   }).sort((a,b)=>a.name.localeCompare(b.name));
   $("npcDbCount").textContent=filtered.length+" / "+NPC_DB.length+" NPCs";
+  if($("npcDbCountTop"))$("npcDbCountTop").textContent=NPC_DB.length;
   $("npcDbList").innerHTML=filtered.map(npc=>{
     const live=liveNpcFor(npc)||{};
     return '<button class="gm-npc-row '+(selectedNpcId===npc.id?"active":"")+'" data-npc-id="'+esc(npc.id)+'"><div><strong>'+esc(npc.name)+'</strong><small>'+esc(npc.role)+' · '+esc(live.current_location||npc.location)+'</small></div><span>'+esc(live.status||npc.status||"")+'</span></button>';
@@ -275,3 +325,5 @@ function initNpcDatabase(){
   renderNpcDirectory();
 }
 initNpcDatabase();
+renderWorldReference();
+bindViewNavigation();
