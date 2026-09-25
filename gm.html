@@ -7,33 +7,30 @@
 <title>Barovia — GM Campaign</title>
 <link rel="stylesheet" href="style.css?v=2">
 <link rel="stylesheet" href="barovia-polish.css?v=1">
-<link rel="stylesheet" href="gm.css?v=5">
+<link rel="stylesheet" href="gm.css?v=6">
 </head>
 <body class="gm-body">
 <div class="gm-app">
   <aside class="gm-sidebar">
     <button class="gm-brand" data-gm-view="dashboard" aria-label="Open GM dashboard">
       <span class="gm-brand-mark">B</span>
-      <span><small>PRIVATE CAMPAIGN</small><strong>BAROVIA</strong><em>Game Master Archive</em></span>
+      <span><small>PRIVATE CAMPAIGN</small><strong>BAROVIA</strong><em>Game Master Campaign</em></span>
     </button>
 
     <nav class="gm-nav" aria-label="GM campaign sections">
       <div class="gm-nav-group"><small>RUN THE GAME</small>
         <button class="gm-nav-link active" data-gm-view="dashboard"><span>◆</span>Dashboard</button>
-        <button class="gm-nav-link" data-gm-view="sessions"><span>◫</span>Sessions</button>
+        <button class="gm-nav-link" data-gm-view="live"><span>▶</span>Live Play</button>
         <button class="gm-nav-link" data-gm-view="threads"><span>⌁</span>Threads</button>
+        <button class="gm-nav-link" data-gm-view="prep"><span>◫</span>Prep</button>
       </div>
-      <div class="gm-nav-group"><small>THE VALLEY</small>
+      <div class="gm-nav-group"><small>THE LIVING WORLD</small>
         <button class="gm-nav-link" data-gm-view="people"><span>♙</span>People</button>
         <button class="gm-nav-link" data-gm-view="places"><span>⌂</span>Places</button>
-        <button class="gm-nav-link" data-gm-view="factions"><span>◇</span>Factions</button>
-        <button class="gm-nav-link" data-gm-view="threats"><span>†</span>Threats</button>
-        <button class="gm-nav-link" data-gm-view="secrets"><span>◉</span>Secrets & Lore</button>
       </div>
-      <div class="gm-nav-group"><small>CONTROL</small>
-        <button class="gm-nav-link" data-gm-view="strahd"><span>♛</span>Strahd</button>
+      <div class="gm-nav-group"><small>CAMPAIGN</small>
         <button class="gm-nav-link" data-gm-view="campaign"><span>◈</span>Campaign State</button>
-        <button class="gm-nav-link" data-gm-view="reference"><span>≡</span>Reference</button>
+        <button class="gm-nav-link" data-gm-view="reference"><span>≡</span>Behind the Screen</button>
       </div>
     </nav>
 
@@ -108,8 +105,48 @@
           </div>
         </section>
 
+        <section class="gm-view" data-view-panel="live">
+          <div class="gm-live-head">
+            <div>
+              <div class="eyebrow">LIVE PLAY</div>
+              <h2>Run the next scene</h2>
+              <p>Only what you need at the table: where they are, what is pressing, who is present and what may move next.</p>
+            </div>
+            <button class="gm-live-edit" data-gm-view="campaign">Edit campaign state</button>
+          </div>
+
+          <section class="gm-live-scene">
+            <div class="gm-live-primary">
+              <small>CURRENT LOCATION</small>
+              <strong id="liveLocation">Unknown</strong>
+              <p id="livePressure">No immediate pressure recorded.</p>
+            </div>
+            <div class="gm-live-side">
+              <small>CAMPAIGN PHASE</small><strong id="livePhase">—</strong>
+              <small>STRAHD</small><strong id="liveStrahd">—</strong>
+            </div>
+          </section>
+
+          <div class="gm-grid two gm-live-grid">
+            <section class="gm-panel">
+              <div class="gm-panel-head"><div><div class="eyebrow">IN THE SCENE</div><h2>People nearby</h2></div><button class="gm-mini-jump" data-gm-view="people">All people</button></div>
+              <div id="liveNpcList" class="gm-live-people"></div>
+            </section>
+            <section class="gm-panel">
+              <div class="gm-panel-head"><div><div class="eyebrow">WORLD IN MOTION</div><h2>Active pressure</h2></div><button class="gm-mini-jump" data-gm-view="threads">All threads</button></div>
+              <div id="liveClockList" class="gm-stack"></div>
+            </section>
+          </div>
+
+          <section class="gm-panel gm-live-notes">
+            <div class="gm-panel-head"><div><div class="eyebrow">SCRATCHPAD</div><h2>During play</h2></div><span id="liveNoteSaved"></span></div>
+            <textarea id="liveNotes" placeholder="Names, decisions, promises, discoveries, damage, consequences. Keep it rough; turn only what matters into campaign canon afterwards."></textarea>
+            <div class="gm-note-actions"><button id="saveLiveNotes">Save scratchpad</button><button id="clearLiveNotes" class="secondary">Clear</button></div>
+          </section>
+        </section>
+
         <section class="gm-view" data-view-panel="people">
-          <div class="gm-section-intro"><div><div class="eyebrow">THE CAST</div><h2>People of Barovia</h2><p>The complete DM record: canon identity, current campaign state, loyalties, knowledge, motives and private notes.</p></div><div class="gm-big-stat"><strong id="npcDbCountTop">—</strong><small>NPC RECORDS</small></div></div>
+          <div class="gm-section-intro"><div><div class="eyebrow">THE CAST</div><h2>People of Barovia</h2><p>Run NPCs first. Current wants, location, disposition and relationships come before reference material.</p></div><div class="gm-big-stat"><strong id="npcDbCountTop">—</strong><small>NPC RECORDS</small></div></div>
 
           <section class="gm-panel gm-npc-database">
             <div class="gm-npc-tools">
@@ -147,8 +184,13 @@
         </section>
 
         <section class="gm-view" data-view-panel="places">
-          <div class="gm-section-intro"><div><div class="eyebrow">THE VALLEY</div><h2>Places</h2><p>Every important settlement, road, ruin and refuge as a living location rather than a chapter heading.</p></div></div>
-          <div id="gmPlaceGrid" class="gm-record-grid"></div>
+          <div class="gm-section-intro"><div><div class="eyebrow">THE LIVING VALLEY</div><h2>Places</h2><p>Open a place to see its pressure, people and playable situation. This is not an encyclopedia.</p></div></div>
+          <div class="gm-place-layout">
+            <div id="gmPlaceGrid" class="gm-place-list"></div>
+            <article id="gmPlaceDetail" class="gm-place-detail">
+              <div class="gm-npc-empty"><div class="eyebrow">PLAYABLE LOCATION</div><h3>Select a place</h3><p>See what is happening there now, who belongs there and what the party could collide with.</p></div>
+            </article>
+          </div>
         </section>
 
         <section class="gm-view" data-view-panel="factions">
@@ -240,13 +282,19 @@
           </section>
         </section>
 
-        <section class="gm-view" data-view-panel="sessions">
-          <div class="gm-section-intro"><div><div class="eyebrow">PREP → PLAY → CANON</div><h2>Sessions</h2><p>Keep session prep focused on likely situations, then convert what actually happened into permanent campaign state.</p></div></div>
-          <div id="gmSessionBoard" class="gm-session-board"></div>
+        <section class="gm-view" data-view-panel="prep">
+          <div class="gm-section-intro"><div><div class="eyebrow">BEFORE THE SESSION</div><h2>Prep</h2><p>Prepare pressures, likely scenes and useful details without scripting what the players must do.</p></div></div>
+          <div class="gm-prep-grid">
+            <section class="gm-panel"><div class="eyebrow">OPENING</div><h3>Where do we begin?</h3><textarea id="prepOpening" placeholder="The concrete situation visible when play starts..."></textarea></section>
+            <section class="gm-panel"><div class="eyebrow">PEOPLE IN MOTION</div><h3>Who acts if ignored?</h3><textarea id="prepPeople" placeholder="NPC wants, decisions already made, likely reactions..."></textarea></section>
+            <section class="gm-panel"><div class="eyebrow">PRESSURE</div><h3>What can worsen?</h3><textarea id="prepPressure" placeholder="Threats, clocks, consequences, signs the party can notice..."></textarea></section>
+            <section class="gm-panel"><div class="eyebrow">DISCOVERY</div><h3>What could they learn?</h3><textarea id="prepDiscoveries" placeholder="Clues, rumours, truths, useful objects, optional revelations..."></textarea></section>
+          </div>
+          <div class="gm-prep-actions"><button id="savePrep">Save prep</button><span id="prepSaved"></span></div>
         </section>
 
         <section class="gm-view" data-view-panel="reference">
-          <div class="gm-section-intro"><div><div class="eyebrow">BEHIND THE SCREEN</div><h2>Reference</h2><p>Fast reminders for how this Barovia is being run in Daggerheart.</p></div></div>
+          <div class="gm-section-intro"><div><div class="eyebrow">BEHIND THE SCREEN</div><h2>Reference</h2><p>RAW, MandyMod, DragnaCarta, factions, threats and lore live here when you need them — not in the way while you run the game.</p></div></div>
           <div id="gmReferenceGrid" class="gm-record-grid"></div>
         </section>
       </section>
@@ -258,6 +306,6 @@
 <script src="gm-npcs.js?v=1"></script>
 <script src="gm-world.js?v=1"></script>
 <script src="gm-sources.js?v=1"></script>
-<script type="module" src="gm.js?v=5"></script>
+<script type="module" src="gm.js?v=6"></script>
 </body>
 </html>
