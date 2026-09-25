@@ -490,3 +490,158 @@ body{background:#080607}
   .hero-castle{right:-6%;transform:scale(.82);transform-origin:bottom right}
   .hero-village{left:24%}
 }
+
+/* v5 — mockup-matched layout */
+.topbar{height:58px}
+.top-actions{align-items:center}
+.top-actions .top-gm-link{
+  display:inline-flex;align-items:center;justify-content:center;min-height:34px;
+  padding:0 14px;border:1px solid #8d3048;background:#281018;
+  color:#f3dfe5;text-decoration:none;text-transform:uppercase;
+  letter-spacing:.13em;font-size:9px;font-weight:900;
+}
+.top-actions .top-gm-link:hover{background:#3c1723;border-color:#c24a66;color:#fff}
+
+.hero{
+  min-height:430px;height:430px;
+  align-items:stretch;
+  background:#090708;
+}
+.hero-art{
+  left:41%;right:0;top:0;bottom:0;
+  background-image:
+    linear-gradient(90deg,#090708 0,rgba(9,7,8,.82) 10%,rgba(9,7,8,.12) 36%,rgba(9,7,8,.02) 100%),
+    url("assets/barovia-mockup-reference.jpg");
+  background-size:auto 930px;
+  background-position:right -112px;
+  background-repeat:no-repeat;
+  filter:saturate(.78) contrast(1.08) brightness(.8);
+}
+.hero-art:before{display:none}
+.hero-mountains,.hero-castle,.hero-village,.hero-raven{display:none}
+.hero:after{
+  background:
+    linear-gradient(90deg,#080607 0%,rgba(8,6,7,.94) 21%,rgba(8,6,7,.62) 38%,rgba(8,6,7,.08) 65%,rgba(8,6,7,.02) 100%),
+    linear-gradient(0deg,#080607 0%,transparent 34%);
+}
+.moon{display:none}
+.hero-copy{
+  padding:60px 68px 34px;
+  max-width:730px;
+}
+.hero h1{
+  font-size:clamp(64px,6.3vw,92px);
+  line-height:.86;margin:11px 0 22px;max-width:650px;
+}
+.hero p{
+  max-width:560px;font-size:15px;line-height:1.55;
+}
+.hero-buttons{margin-top:18px}
+.hero-buttons button{min-height:40px;padding:10px 17px}
+.campaign-ledger{
+  min-height:112px;
+  grid-template-columns:minmax(0,1.65fr) minmax(360px,.7fr);
+  border-color:#6c4c3b;
+}
+.ledger-stats{min-height:112px;padding:10px 14px}
+.ledger-stats>div{padding:10px 15px}
+.ledger-icon{width:40px;height:40px}
+.mist-quote{font-size:18px;padding:16px 74px 16px 26px}
+
+.home-dashboard{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;
+  padding:14px 18px 18px;
+  background:
+    linear-gradient(180deg,#0a0809,#070506);
+}
+.home-panel{
+  min-width:0;border:1px solid #51333c;background:#0e0b0c;
+  box-shadow:0 16px 34px rgba(0,0,0,.24);
+}
+.home-panel header{
+  height:42px;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:0 13px;border-bottom:1px solid #4a2e37;
+  background:linear-gradient(180deg,#151012,#0e0b0c);
+}
+.home-panel header>div{display:flex;align-items:center;gap:9px}
+.home-panel header small{
+  color:#c9a76d;font-size:8px;font-weight:900;letter-spacing:.13em;
+}
+.home-panel header button{
+  border:0;background:transparent;color:#9b7c83;
+  text-transform:none;font:11px Georgia,serif;padding:4px;
+}
+.panel-symbol{color:#a73650}
+.panel-art{
+  height:126px;border-bottom:1px solid #4d3038;
+  background-color:#171215;background-repeat:no-repeat;
+  position:relative;overflow:hidden;
+}
+.panel-art:after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(7,5,6,.05),rgba(7,5,6,.55));
+}
+.panel-art-road{
+  background-image:url("assets/barovia-mockup-reference.jpg");
+  background-size:930px auto;background-position:56% 69%;
+  filter:saturate(.72) brightness(.7);
+}
+.panel-art-letter{
+  background:
+    radial-gradient(circle at 79% 21%,#d7a65b 0 5px,rgba(150,75,34,.75) 6px,transparent 38px),
+    linear-gradient(145deg,transparent 0 25%,#bca783 26% 64%,transparent 65%),
+    radial-gradient(circle at 55% 54%,#6f1d31 0 18px,#45121f 19px 26px,transparent 27px),
+    linear-gradient(145deg,#2a1a16,#120d0c);
+}
+.panel-art-letter:before{
+  content:"";position:absolute;left:22%;top:24%;width:45%;height:2px;
+  background:#55483a;box-shadow:0 12px #675748,0 24px #5a4b3f,0 36px #6b5948;
+  opacity:.65;
+}
+.panel-art-state{
+  background-image:url("assets/barovia-mockup-reference.jpg");
+  background-size:820px auto;background-position:89% 19%;
+  filter:saturate(.92) brightness(.67) sepia(.08);
+}
+.panel-copy{padding:12px 14px 15px}
+.panel-copy h2{
+  margin:0 0 7px;color:#eee3d8;font:20px/1.1 Georgia,serif;
+}
+.panel-copy p{
+  margin:3px 0;color:#aa9da1;font:12px/1.55 Georgia,serif;
+}
+.panel-copy p strong{color:#d8cacd;font-weight:400}
+
+.lower-records{padding-top:42px}
+.split-records{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.mini-heading{
+  margin-bottom:10px;color:#9a7e85;text-transform:uppercase;
+  letter-spacing:.16em;font-size:8px;font-weight:900;
+}
+.lower-records #threadGrid,.lower-records #discoveryGrid{
+  grid-template-columns:1fr;gap:9px;
+}
+.lower-records #threadGrid .card,.lower-records #discoveryGrid .card{
+  min-height:0;padding:14px 15px;
+}
+.lower-records #threadGrid .card:before,.lower-records #discoveryGrid .card:before{display:none}
+.lower-records .card h3{font-size:20px}
+.lower-records .card p{font-size:11px}
+.field-note{margin-top:0}
+
+@media(max-width:1050px){
+  .hero-art{left:32%}
+  .home-dashboard{grid-template-columns:1fr 1fr}
+  .home-panel-state{grid-column:1/-1}
+}
+@media(max-width:850px){
+  .hero{height:500px;min-height:500px}
+  .hero-art{left:18%;opacity:.48}
+  .hero-copy{padding:58px 26px 32px}
+  .home-dashboard{grid-template-columns:1fr}
+  .home-panel-state{grid-column:auto}
+  .split-records{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .top-actions .top-gm-link{position:fixed;right:12px;bottom:12px;z-index:10020;background:#32151f}
+}
