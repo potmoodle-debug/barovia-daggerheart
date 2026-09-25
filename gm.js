@@ -40,7 +40,7 @@ function item(title,meta,badge=""){
 }
 
 function render(data){
-  dashboardData=data;
+  dashboardData=data;\n  if(typeof renderNpcDirectory==="function")renderNpcDirectory();
   const c=data.campaign||{};
   const s=data.strahd||{};
   const snap=data.snapshot||{};
