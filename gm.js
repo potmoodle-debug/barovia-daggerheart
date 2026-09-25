@@ -12,6 +12,7 @@ const WORLD=window.BAROVIA_GM_WORLD||{};
 const SOURCE_LENSES=window.BAROVIA_SOURCE_LENSES||{guides:{},npcs:{}};
 const VIEW_META={
   dashboard:["THINKING ABOUT THE GAME","Explore"],
+  brain:["RELATIONSHIP VIEW","Campaign Brain"],
   live:["RIGHT NOW","Live Play"],
   threads:["MOVING WITHOUT THE PARTY","Threads"],
   prep:["BEFORE THE SESSION","Prep"],
@@ -54,6 +55,123 @@ function openPlaceFromExplore(name){
   setView("places");
   if(idx>=0)renderPlaceDetail(idx);
 }
+
+let brainHistory=[];
+let brainFocus=null;
+function allBrainRecords(){
+  const records=[];
+  NPC_DB.forEach(n=>records.push({key:"npc:"+n.id,type:"PERSON",title:n.name,subtitle:n.role||n.region||"",data:n}));
+  (WORLD.places||[]).forEach(p=>records.push({key:"place:"+p.name,type:"PLACE",title:p.name,subtitle:p.kind||"",data:p}));
+  (WORLD.factions||[]).forEach(x=>records.push({key:"faction:"+x.name,type:"FACTION",title:x.name,subtitle:"Faction",data:x}));
+  (WORLD.secrets||[]).forEach(x=>records.push({key:"secret:"+x.name,type:"SECRET",title:x.name,subtitle:"GM truth",data:x}));
+  return records;
+}
+function recordByKey(key){return allBrainRecords().find(r=>r.key===key)}
+function brainConnections(rec){
+  if(!rec)return[];
+  const out=[];
+  const add=r=>{if(r&&r.key!==rec.key&&!out.some(x=>x.key===r.key))out.push(r)};
+  if(rec.type==="PERSON"){
+    const n=rec.data;
+    NPC_DB.forEach(other=>{
+      if(other.id===n.id)return;
+      const text=[n.relationships,n.faction,n.region,n.location].join(" ").toLowerCase();
+      const sameFaction=n.faction&&other.faction===n.faction;
+      const sameRegion=n.region&&other.region===n.region;
+      const named=text.includes(other.name.toLowerCase())||text.includes(String(other.publicName||"").toLowerCase());
+      if(named||sameFaction||sameRegion)add(recordByKey("npc:"+other.id));
+    });
+    (WORLD.places||[]).forEach(p=>{
+      const hay=[n.region,n.location].join(" ").toLowerCase();
+      if(hay.includes(p.name.toLowerCase())||p.name.toLowerCase().includes(String(n.region||"").toLowerCase()))add(recordByKey("place:"+p.name));
+    });
+    (WORLD.factions||[]).forEach(x=>{if(n.faction&&x.name.toLowerCase().includes(n.faction.toLowerCase())||String(n.faction||"").toLowerCase().includes(x.name.toLowerCase()))add(recordByKey("faction:"+x.name))});
+  }else if(rec.type==="PLACE"){
+    NPC_DB.filter(n=>placeNpcMatches(rec.data,n)).forEach(n=>add(recordByKey("npc:"+n.id)));
+    (WORLD.factions||[]).forEach(x=>{
+      const hay=[x.name,x.goal,x.assets,x.friction].join(" ").toLowerCase();
+      if(hay.includes(rec.title.toLowerCase()))add(recordByKey("faction:"+x.name));
+    });
+  }else if(rec.type==="FACTION"){
+    NPC_DB.forEach(n=>{if(String(n.faction||"").toLowerCase().includes(rec.title.toLowerCase())||rec.title.toLowerCase().includes(String(n.faction||"").toLowerCase()))add(recordByKey("npc:"+n.id))});
+    (WORLD.places||[]).forEach(p=>{const hay=[rec.data.goal,rec.data.assets,rec.data.friction].join(" ").toLowerCase();if(hay.includes(p.name.toLowerCase()))add(recordByKey("place:"+p.name))});
+  }else if(rec.type==="SECRET"){
+    NPC_DB.forEach(n=>{const hay=[n.knows,n.relationships,n.canon].join(" ").toLowerCase();if(hay.includes(rec.title.toLowerCase().split(" ")[0]))add(recordByKey("npc:"+n.id))});
+    (WORLD.places||[]).forEach(p=>{const hay=[rec.data.truth,rec.data.whoKnows].join(" ").toLowerCase();if(hay.includes(p.name.toLowerCase()))add(recordByKey("place:"+p.name))});
+  }
+  return out.slice(0,10);
+}
+function brainSummary(rec){
+  if(rec.type==="PERSON")return rec.data.goals||rec.data.portrayal||rec.data.canon||"";
+  if(rec.type==="PLACE")return rec.data.pressure||rec.data.summary||"";
+  if(rec.type==="FACTION")return rec.data.goal||"";
+  if(rec.type==="SECRET")return rec.data.truth||"";
+  return"";
+}
+function openBrainRecord(rec){
+  if(!rec)return;
+  if(brainFocus&&brainFocus!==rec.key)brainHistory.push(brainFocus);
+  brainFocus=rec.key;
+  renderBrain();
+}
+function renderBrain(){
+  if(!$("gmBrain"))return;
+  const rec=recordByKey(brainFocus)||recordByKey("npc:strahd")||allBrainRecords()[0];
+  if(!rec)return;
+  brainFocus=rec.key;
+  const links=brainConnections(rec);
+  $("gmBrain").innerHTML=
+    '<div class="gm-brain-focus"><small>'+esc(rec.type)+'</small><strong>'+esc(rec.title)+'</strong><p>'+esc(brainSummary(rec))+'</p><button id="brainOpenRecord">Open full record</button></div>'+
+    '<div class="gm-brain-rings">'+links.map(r=>'<button class="gm-brain-node" data-brain-key="'+esc(r.key)+'"><small>'+esc(r.type)+'</small><strong>'+esc(r.title)+'</strong><span>'+esc(r.subtitle||"")+'</span></button>').join("")+'</div>';
+  $("gmBrain").querySelectorAll("[data-brain-key]").forEach(b=>b.onclick=()=>openBrainRecord(recordByKey(b.dataset.brainKey)));
+  $("brainOpenRecord").onclick=()=>{
+    if(rec.type==="PERSON"){setView("people");renderNpcDetail(rec.data.id)}
+    else if(rec.type==="PLACE"){openPlaceFromExplore(rec.data.name)}
+    else setView("reference");
+  };
+}
+function initBrain(){
+  if(!$("brainChooser"))return;
+  const records=allBrainRecords();
+  $("brainChooser").addEventListener("input",()=>{
+    const q=$("brainChooser").value.trim().toLowerCase();
+    if(!q)return;
+    const hit=records.find(r=>[r.title,r.subtitle,r.type].join(" ").toLowerCase().includes(q));
+    if(hit)openBrainRecord(hit);
+  });
+  $("brainRandom").onclick=()=>openBrainRecord(records[Math.floor(Math.random()*records.length)]);
+  $("brainBackBtn").onclick=()=>{const prev=brainHistory.pop();if(prev){brainFocus=prev;renderBrain()}};
+  if(!brainFocus)brainFocus="npc:strahd";
+  renderBrain();
+}
+function globalSearchHits(q){
+  const query=q.trim().toLowerCase();if(!query)return[];
+  return allBrainRecords().filter(r=>{
+    const d=r.data||{};
+    const hay=[r.title,r.subtitle,r.type,d.name,d.role,d.region,d.location,d.faction,d.goals,d.relationships,d.summary,d.pressure,d.goal,d.truth].join(" ").toLowerCase();
+    return hay.includes(query);
+  }).slice(0,12);
+}
+function openGlobalRecord(rec){
+  if(rec.type==="PERSON"){setView("people");renderNpcDetail(rec.data.id)}
+  else if(rec.type==="PLACE"){openPlaceFromExplore(rec.data.name)}
+  else {setView("brain");openBrainRecord(rec)}
+}
+function initGlobalSearch(){
+  if(!$("gmGlobalSearch"))return;
+  const input=$("gmGlobalSearch"),host=$("gmGlobalResults");
+  input.addEventListener("input",()=>{
+    const hits=globalSearchHits(input.value);
+    host.innerHTML=hits.map((r,i)=>'<button data-global-index="'+i+'"><small>'+esc(r.type)+'</small><strong>'+esc(r.title)+'</strong></button>').join("");
+    host.classList.toggle("active",Boolean(input.value.trim()));
+    host.querySelectorAll("[data-global-index]").forEach(b=>b.onclick=()=>{openGlobalRecord(hits[Number(b.dataset.globalIndex)]);input.value="";host.classList.remove("active")});
+  });
+  document.addEventListener("keydown",e=>{
+    if(e.key!=="/"||e.ctrlKey||e.metaKey||e.altKey||/input|textarea|select/i.test(e.target.tagName))return;
+    e.preventDefault();input.focus();input.select();
+  });
+}
+
 function renderExplore(data=dashboardData||{}){
   if(!$("exploreTrail"))return;
   const campaign=data.campaign||{};
@@ -63,6 +181,9 @@ function renderExplore(data=dashboardData||{}){
   const locLower=location.toLowerCase();
 
   text("exploreNowLocation",location);
+  if($("exploreRecordCount"))$("exploreRecordCount").textContent=allBrainRecords().length;
+  if($("exploreConnectionCount"))$("exploreConnectionCount").textContent=allBrainRecords().reduce((n,r)=>n+brainConnections(r).length,0);
+  if($("exploreClockCount"))$("exploreClockCount").textContent=clocks.length;
   text("exploreNowPressure",campaign.current_pressure||"Nothing is written as immediate pressure yet — which may mean something is being missed.");
   text("exploreNowStrahd",(strahd.overall_posture||"observe")+(strahd.active_target?" · "+strahd.active_target:""));
   text("exploreStrahdThought",strahd.current_interest||strahd.next_move||"What has caught his attention?");
@@ -501,4 +622,6 @@ renderWorldReference();
 bindViewNavigation();
 initWorkingTools();
 initExplore();
+initBrain();
+initGlobalSearch();
 renderExplore();
