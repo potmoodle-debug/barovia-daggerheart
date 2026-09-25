@@ -11,7 +11,7 @@ const $=id=>document.getElementById(id);
 const WORLD=window.BAROVIA_GM_WORLD||{};
 const SOURCE_LENSES=window.BAROVIA_SOURCE_LENSES||{guides:{},npcs:{}};
 const VIEW_META={
-  dashboard:["AT THE TABLE","Dashboard"],
+  dashboard:["THINKING ABOUT THE GAME","Explore"],
   live:["RIGHT NOW","Live Play"],
   threads:["MOVING WITHOUT THE PARTY","Threads"],
   prep:["BEFORE THE SESSION","Prep"],
@@ -39,6 +39,108 @@ function bindViewNavigation(){
 function recordCard(title,kicker,body,meta=""){
   return '<article class="gm-record-card"><small>'+esc(kicker)+'</small><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p>'+(meta?'<div class="gm-record-meta">'+esc(meta)+'</div>':'')+'</article>';
 }
+
+let exploreOffset=0;
+let sparkIndex=0;
+function pickExplore(arr,count,offset=0){
+  if(!arr?.length)return[];
+  const out=[];
+  for(let i=0;i<Math.min(count,arr.length);i++)out.push(arr[(i+offset)%arr.length]);
+  return out;
+}
+function openNpcFromExplore(id){setView("people");renderNpcDetail(id);}
+function openPlaceFromExplore(name){
+  const idx=(WORLD.places||[]).findIndex(p=>p.name===name);
+  setView("places");
+  if(idx>=0)renderPlaceDetail(idx);
+}
+function renderExplore(data=dashboardData||{}){
+  if(!$("exploreTrail"))return;
+  const campaign=data.campaign||{};
+  const strahd=data.strahd||{};
+  const clocks=data.clocks||[];
+  const location=campaign.current_location||"Somewhere in Barovia";
+  const locLower=location.toLowerCase();
+
+  text("exploreNowLocation",location);
+  text("exploreNowPressure",campaign.current_pressure||"Nothing is written as immediate pressure yet — which may mean something is being missed.");
+  text("exploreNowStrahd",(strahd.overall_posture||"observe")+(strahd.active_target?" · "+strahd.active_target:""));
+  text("exploreStrahdThought",strahd.current_interest||strahd.next_move||"What has caught his attention?");
+
+  const nearby=NPC_DB.filter(n=>{
+    const hay=[n.region,n.location].join(" ").toLowerCase();
+    return locLower && (hay.includes(locLower)||locLower.includes(String(n.region||"").toLowerCase()));
+  });
+  const peoplePool=(nearby.length?nearby:NPC_DB).slice();
+  const people=pickExplore(peoplePool,4,exploreOffset);
+  $("explorePeople").innerHTML=people.map(n=>{
+    const live=liveNpcFor(n)||{};
+    return '<button class="gm-face-card" data-explore-npc="'+esc(n.id)+'"><small>'+esc(live.current_location||n.location||n.region||"BAROVIA")+'</small><strong>'+esc(n.name)+'</strong><p>'+esc(live.private_motive||n.goals||n.portrayal||"")+'</p><span>'+esc(live.disposition||n.role||"")+'</span></button>';
+  }).join("");
+  $("explorePeople").querySelectorAll("[data-explore-npc]").forEach(b=>b.onclick=()=>openNpcFromExplore(b.dataset.exploreNpc));
+
+  const places=WORLD.places||[];
+  const currentPlace=places.find(p=>locLower.includes(p.name.toLowerCase())||p.name.toLowerCase().includes(locLower));
+  const placeChoices=pickExplore(currentPlace?[currentPlace,...places.filter(p=>p!==currentPlace)]:places,2,exploreOffset);
+  const secrets=pickExplore(WORLD.secrets||[],1,exploreOffset);
+  const factions=pickExplore(WORLD.factions||[],1,exploreOffset+1);
+
+  const cards=[];
+  if(people[0])cards.push({kind:"PERSON",title:people[0].name,body:people[0].goals||people[0].portrayal,action:"npc",id:people[0].id});
+  if(placeChoices[0])cards.push({kind:"PLACE",title:placeChoices[0].name,body:placeChoices[0].pressure||placeChoices[0].summary,action:"place",id:placeChoices[0].name});
+  if(secrets[0])cards.push({kind:"SECRET",title:secrets[0].name,body:secrets[0].truth,action:"reference"});
+  if(factions[0])cards.push({kind:"FACTION",title:factions[0].name,body:factions[0].goal,action:"reference"});
+  if(people[1])cards.push({kind:"PERSON",title:people[1].name,body:people[1].relationships||people[1].goals,action:"npc",id:people[1].id});
+
+  $("exploreTrail").innerHTML=cards.map((x,i)=>'<button class="gm-thought-card gm-thought-'+i+'" data-thought-action="'+esc(x.action)+'" data-thought-id="'+esc(x.id||"")+'"><small>'+esc(x.kind)+'</small><strong>'+esc(x.title)+'</strong><p>'+esc(x.body||"")+'</p><span>Follow this →</span></button>').join("");
+  $("exploreTrail").querySelectorAll("[data-thought-action]").forEach(b=>b.onclick=()=>{
+    const a=b.dataset.thoughtAction,id=b.dataset.thoughtId;
+    if(a==="npc")openNpcFromExplore(id);
+    else if(a==="place")openPlaceFromExplore(id);
+    else setView("reference");
+  });
+
+  $("exploreLooseEnds").innerHTML=clocks.length?clocks.slice(0,6).map(x=>'<button class="gm-loose-end" data-gm-view="threads"><div><small>'+esc(x.owner||"UNCLAIMED")+'</small><strong>'+esc(x.label)+'</strong></div><span>'+esc(x.current_step)+"/"+esc(x.max_step)+'</span></button>').join(""):'<div class="gm-empty-whisper">No clocks yet. That does not mean Barovia is still.</div>';
+  $("exploreLooseEnds").querySelectorAll("[data-gm-view]").forEach(b=>b.onclick=()=>setView("threads"));
+
+  const sparks=[];
+  const p0=people[0],p1=people[1],pl=placeChoices[0],fac=factions[0],sec=secrets[0];
+  if(p0)sparks.push("What happens if "+p0.name+" gets exactly what they want?");
+  if(p0&&p1)sparks.push("What would make "+p0.name+" choose "+p1.name+" over the party?");
+  if(pl)sparks.push("What changes in "+pl.name+" if the party does not return for a week?");
+  if(fac)sparks.push("What visible move could "+fac.name+" make before anyone understands why?");
+  if(sec)sparks.push("Who would be most dangerous if they learned the truth about "+sec.name+"?");
+  sparks.push("What is Strahd allowing to happen because it currently interests him?");
+  sparks.push("Which apparently minor NPC could become important if the players show them kindness?");
+  window.__baroviaSparks=sparks;
+  text("exploreSpark",sparks[sparkIndex%sparks.length]);
+}
+
+function initExplore(){
+  if(!$("exploreSearch"))return;
+  $("reshuffleExplore").onclick=()=>{exploreOffset++;renderExplore()};
+  $("nextSpark").onclick=()=>{sparkIndex++;const s=window.__baroviaSparks||[];if(s.length)text("exploreSpark",s[sparkIndex%s.length])};
+  $("exploreSearch").addEventListener("input",()=>{
+    const q=$("exploreSearch").value.trim().toLowerCase();
+    if(!q){$("exploreResults").classList.add("hidden");$("exploreResults").innerHTML="";return}
+    const hits=[];
+    NPC_DB.forEach(n=>{const hay=[n.name,n.role,n.region,n.location,n.faction,n.goals,n.relationships].join(" ").toLowerCase();if(hay.includes(q))hits.push({type:"PERSON",title:n.name,meta:n.role,id:n.id,action:"npc"})});
+    (WORLD.places||[]).forEach(p=>{const hay=[p.name,p.kind,p.summary,p.pressure].join(" ").toLowerCase();if(hay.includes(q))hits.push({type:"PLACE",title:p.name,meta:p.kind,id:p.name,action:"place"})});
+    (WORLD.secrets||[]).forEach(s=>{const hay=[s.name,s.truth,s.whoKnows].join(" ").toLowerCase();if(hay.includes(q))hits.push({type:"SECRET",title:s.name,meta:"GM truth",action:"reference"})});
+    (WORLD.factions||[]).forEach(x=>{const hay=[x.name,x.goal,x.assets,x.friction].join(" ").toLowerCase();if(hay.includes(q))hits.push({type:"FACTION",title:x.name,meta:x.goal,action:"reference"})});
+    const shown=hits.slice(0,10);
+    $("exploreResults").innerHTML=shown.length?shown.map((x,i)=>'<button data-search-index="'+i+'"><small>'+esc(x.type)+'</small><strong>'+esc(x.title)+'</strong><span>'+esc(x.meta||"")+'</span></button>').join(""):'<div class="gm-empty-whisper">Nothing obvious. Try a name, place, faction or secret.</div>';
+    $("exploreResults").classList.remove("hidden");
+    $("exploreResults").querySelectorAll("[data-search-index]").forEach(b=>b.onclick=()=>{
+      const x=shown[Number(b.dataset.searchIndex)];
+      if(x.action==="npc")openNpcFromExplore(x.id);
+      else if(x.action==="place")openPlaceFromExplore(x.id);
+      else setView("reference");
+      $("exploreResults").classList.add("hidden");
+    });
+  });
+}
+
 function renderWorldReference(){
   renderPlaces();
   if($("gmReferenceGrid")){
@@ -124,6 +226,7 @@ function item(title,meta,badge=""){
 function render(data){
   dashboardData=data;
   if(typeof renderNpcDirectory==="function")renderNpcDirectory();
+  renderExplore(data);
   const c=data.campaign||{};
   const s=data.strahd||{};
   const snap=data.snapshot||{};
@@ -397,3 +500,5 @@ initNpcDatabase();
 renderWorldReference();
 bindViewNavigation();
 initWorkingTools();
+initExplore();
+renderExplore();
