@@ -4,172 +4,259 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0709">
-<title>Barovia — GM Control</title>
+<title>Barovia — GM Campaign</title>
 <link rel="stylesheet" href="style.css?v=2">
 <link rel="stylesheet" href="barovia-polish.css?v=1">
-<link rel="stylesheet" href="gm.css?v=2">
+<link rel="stylesheet" href="gm.css?v=3">
 </head>
 <body class="gm-body">
-<div class="gm-shell">
-  <header class="gm-top">
-    <div>
-      <div class="eyebrow">PRIVATE CAMPAIGN CONTROL</div>
-      <h1>Barovia GM</h1>
-    </div>
-    <div class="gm-top-actions">
-      <a class="gm-player-link" href="./">← Player Site</a>
-      <span id="authStatus">Not signed in</span>
-      <button id="signOutBtn" class="hidden">Sign out</button>
-    </div>
-  </header>
+<div class="gm-app">
+  <aside class="gm-sidebar">
+    <button class="gm-brand" data-gm-view="dashboard" aria-label="Open GM dashboard">
+      <span class="gm-brand-mark">B</span>
+      <span><small>PRIVATE CAMPAIGN</small><strong>BAROVIA</strong><em>Game Master Archive</em></span>
+    </button>
 
-  <main>
-    <section id="authPanel" class="gm-auth-card">
-      <div class="eyebrow">GM ACCESS</div>
-      <h2>Sign in to the private campaign state</h2>
-      <p>Use the email attached to your Supabase account. Private campaign data is only returned after the backend verifies your account.</p>
-      <div class="gm-auth-grid">
-        <label>Email<input id="emailInput" type="email" autocomplete="email"></label>
-        <label>Password<input id="passwordInput" type="password" autocomplete="current-password"></label>
+    <nav class="gm-nav" aria-label="GM campaign sections">
+      <div class="gm-nav-group"><small>RUN THE GAME</small>
+        <button class="gm-nav-link active" data-gm-view="dashboard"><span>◆</span>Dashboard</button>
+        <button class="gm-nav-link" data-gm-view="sessions"><span>◫</span>Sessions</button>
+        <button class="gm-nav-link" data-gm-view="threads"><span>⌁</span>Threads</button>
       </div>
-      <div class="gm-actions">
-        <button id="signInBtn">Sign in</button>
-        <button id="signUpBtn" class="secondary">Create GM login</button>
-        <button id="resendBtn" class="secondary">Resend confirmation</button>
+      <div class="gm-nav-group"><small>THE VALLEY</small>
+        <button class="gm-nav-link" data-gm-view="people"><span>♙</span>People</button>
+        <button class="gm-nav-link" data-gm-view="places"><span>⌂</span>Places</button>
+        <button class="gm-nav-link" data-gm-view="factions"><span>◇</span>Factions</button>
+        <button class="gm-nav-link" data-gm-view="threats"><span>†</span>Threats</button>
+        <button class="gm-nav-link" data-gm-view="secrets"><span>◉</span>Secrets & Lore</button>
       </div>
-      <p id="authMessage" class="gm-message"></p>
-    </section>
+      <div class="gm-nav-group"><small>CONTROL</small>
+        <button class="gm-nav-link" data-gm-view="strahd"><span>♛</span>Strahd</button>
+        <button class="gm-nav-link" data-gm-view="campaign"><span>◈</span>Campaign State</button>
+        <button class="gm-nav-link" data-gm-view="reference"><span>≡</span>Reference</button>
+      </div>
+    </nav>
 
-    <section id="dashboard" class="hidden">
-      <section class="gm-status-strip">
-        <div><small>CAMPAIGN</small><strong id="campaignStatus">—</strong></div>
-        <div><small>STRAHD</small><strong id="strahdStatus">—</strong></div>
-        <div><small>PLAYER SNAPSHOT</small><strong id="snapshotStatus">—</strong></div>
+    <div class="gm-sidebar-foot">
+      <div class="gm-auth-dot"><i></i><span id="authStatus">Not signed in</span></div>
+      <button id="signOutBtn" class="gm-text-button hidden">Sign out</button>
+    </div>
+  </aside>
+
+  <div class="gm-main-shell">
+    <header class="gm-commandbar">
+      <div>
+        <button id="gmMenuBtn" class="gm-menu-btn">☰</button>
+        <div class="eyebrow" id="gmViewEyebrow">AT THE TABLE</div>
+        <h1 id="gmViewTitle">Dashboard</h1>
+      </div>
+      <div class="gm-command-actions">
+        <span class="gm-command-hint">GM ONLY</span>
+      </div>
+    </header>
+
+    <main class="gm-main">
+      <section id="authPanel" class="gm-auth-card">
+        <div class="eyebrow">GM ACCESS</div>
+        <h2>Open the campaign archive</h2>
+        <p>Sign in to load the private campaign state.</p>
+        <div class="gm-auth-grid">
+          <label>Email<input id="emailInput" type="email" autocomplete="email"></label>
+          <label>Password<input id="passwordInput" type="password" autocomplete="current-password"></label>
+        </div>
+        <div class="gm-actions">
+          <button id="signInBtn">Sign in</button>
+          <button id="signUpBtn" class="secondary">Create GM login</button>
+          <button id="resendBtn" class="secondary">Resend confirmation</button>
+        </div>
+        <p id="authMessage" class="gm-message"></p>
       </section>
 
-      <div class="gm-grid two">
-        <section class="gm-panel">
-          <div class="gm-panel-head"><div><div class="eyebrow">LIVE STATE</div><h2>Campaign</h2></div><button id="saveCampaignBtn">Save</button></div>
-          <div class="gm-fields">
-            <label>Current location<input id="campaignLocation"></label>
-            <label>Immediate pressure<input id="campaignPressure"></label>
-            <label>Campaign phase<input id="campaignPhase"></label>
-            <label class="wide">GM notes<textarea id="campaignNotes"></textarea></label>
-          </div>
-        </section>
-
-        <section class="gm-panel gm-strahd">
-          <div class="gm-panel-head"><div><div class="eyebrow">PRIVATE PRESSURE</div><h2>Strahd</h2></div><button id="saveStrahdBtn">Save</button></div>
-          <div class="gm-fields">
-            <label>Overall posture
-              <select id="strahdPosture">
-                <option>observe</option><option>test</option><option>intrigue</option><option>isolate</option><option>claim</option><option>destroy</option>
-              </select>
-            </label>
-            <label>Active target<input id="strahdTarget"></label>
-            <label>Current interest<input id="strahdInterest"></label>
-            <label>Current test<input id="strahdTest"></label>
-            <label class="wide">Next move<textarea id="strahdNext"></textarea></label>
-            <label class="wide">Reason not to escalate<textarea id="strahdRestraint"></textarea></label>
-          </div>
-        </section>
-      </div>
-
-      <div class="gm-grid two">
-        <section class="gm-panel">
-          <div class="gm-panel-head"><div><div class="eyebrow">PER CHARACTER</div><h2>Strahd attention</h2></div></div>
-          <div id="attentionList" class="gm-stack"></div>
-          <div class="gm-subform">
-            <input id="attentionName" placeholder="Character name">
-            <select id="attentionStage">
-              <option>observe</option><option>test</option><option>intrigue</option><option>isolate</option><option>claim</option><option>destroy</option>
-            </select>
-            <input id="attentionReason" placeholder="Why Strahd is interested">
-            <input id="attentionPressure" placeholder="Next pressure">
-            <textarea id="attentionNotes" placeholder="Private notes"></textarea>
-            <button id="saveAttentionBtn">Save character attention</button>
-          </div>
-        </section>
-
-        <section class="gm-panel">
-          <div class="gm-panel-head"><div><div class="eyebrow">PEOPLE</div><h2>NPC state</h2></div></div>
-          <div id="npcList" class="gm-stack"></div>
-          <div class="gm-subform">
-            <input id="npcName" placeholder="NPC name">
-            <input id="npcPublicName" placeholder="Player-known name">
-            <input id="npcLocation" placeholder="Current location">
-            <input id="npcStatus" placeholder="Status">
-            <input id="npcDisposition" placeholder="Disposition">
-            <textarea id="npcMotive" placeholder="Private motive"></textarea>
-            <button id="saveNpcBtn">Add NPC</button>
-          </div>
-        </section>
-      </div>
-
-      <section class="gm-panel gm-npc-database">
-        <div class="gm-panel-head">
-          <div><div class="eyebrow">BAROVIA CAST</div><h2>NPC Database</h2></div>
-          <div class="gm-npc-count" id="npcDbCount">—</div>
-        </div>
-        <div class="gm-npc-tools">
-          <input id="npcDbSearch" placeholder="Search name, place, faction, role or tag">
-          <select id="npcDbRegion"><option value="">All locations</option></select>
-          <select id="npcDbStatus"><option value="">All statuses</option></select>
-          <button id="npcDbClear" class="secondary">Clear</button>
-        </div>
-        <div class="gm-npc-layout">
-          <div id="npcDbList" class="gm-npc-directory"></div>
-          <article id="npcDbDetail" class="gm-npc-detail">
-            <div class="gm-npc-empty"><div class="eyebrow">PRIVATE REFERENCE</div><h3>Select an NPC</h3><p>Canon reference, portrayal, goals, knowledge, relationships, Daggerheart notes and your campaign-specific live notes appear here.</p></div>
-          </article>
-        </div>
-      </section>
-
-      <div class="gm-grid two">
-        <section class="gm-panel">
-          <div class="gm-panel-head"><div><div class="eyebrow">REACTIVE WORLD</div><h2>Threat clocks</h2></div></div>
-          <div id="clockList" class="gm-stack"></div>
-          <div class="gm-subform">
-            <input id="clockLabel" placeholder="Clock name">
-            <input id="clockOwner" placeholder="Owner / faction">
-            <div class="gm-inline">
-              <label>Step<input id="clockStep" type="number" min="0" value="0"></label>
-              <label>Max<input id="clockMax" type="number" min="1" value="4"></label>
-              <label>Visibility<select id="clockVisibility"><option>hidden</option><option>hinted</option><option>known</option></select></label>
-            </div>
-            <input id="clockHint" placeholder="Player-safe hint">
-            <textarea id="clockAdvance" placeholder="What advances it?"></textarea>
-            <textarea id="clockConsequence" placeholder="What happens when it completes?"></textarea>
-            <button id="saveClockBtn">Add clock</button>
-          </div>
-        </section>
-
-        <section class="gm-panel gm-publish">
-          <div class="gm-panel-head"><div><div class="eyebrow">PLAYER-SAFE OUTPUT</div><h2>Revelations</h2></div></div>
-          <div id="revelationList" class="gm-stack"></div>
-          <div class="gm-subform">
-            <select id="revelationKind"><option value="discovery">Discovery</option><option value="thread">Possibility</option><option value="record">Record</option></select>
-            <input id="revelationSubject" placeholder="Internal subject">
-            <textarea id="revelationJson" spellcheck="false" placeholder='Player-safe JSON payload'></textarea>
-            <button id="queueRevelationBtn">Approve for next publish</button>
-          </div>
-          <div class="publish-box">
+      <section id="dashboard" class="hidden">
+        <section class="gm-view active" data-view-panel="dashboard">
+          <div class="gm-hero">
             <div>
-              <div class="eyebrow">PUBLISH</div>
-              <h3>Send approved changes to players</h3>
-              <p>This updates the public snapshot only. Hidden GM state remains private.</p>
+              <div class="eyebrow">AT THE TABLE</div>
+              <h2>The valley at a glance</h2>
+              <p>Immediate state, active pressure and the things most likely to matter in the next scene.</p>
             </div>
-            <button id="publishBtn">Publish to Players</button>
+            <div class="gm-hero-sigil">R</div>
           </div>
-          <p id="publishMessage" class="gm-message"></p>
+
+          <section class="gm-status-strip">
+            <div><small>CAMPAIGN</small><strong id="campaignStatus">—</strong></div>
+            <div><small>STRAHD</small><strong id="strahdStatus">—</strong></div>
+            <div><small>NPCs IN ARCHIVE</small><strong id="dashboardNpcCount">—</strong></div>
+          </section>
+
+          <div class="gm-dashboard-grid">
+            <button class="gm-jump-card" data-gm-view="people"><small>PEOPLE</small><strong>NPC Archive</strong><p id="dashboardNpcSummary">Browse the cast of Barovia.</p></button>
+            <button class="gm-jump-card" data-gm-view="places"><small>PLACES</small><strong>Valley Atlas</strong><p>Settlements, ruins, roads and dangerous ground.</p></button>
+            <button class="gm-jump-card gm-jump-card-danger" data-gm-view="strahd"><small>STRAHD</small><strong>Current Pressure</strong><p id="dashboardStrahdSummary">What is he doing, and why now?</p></button>
+            <button class="gm-jump-card" data-gm-view="threads"><small>THREADS</small><strong>Active Situations</strong><p>What is moving even when the party does nothing?</p></button>
+          </div>
+
+          <div class="gm-grid two">
+            <section class="gm-panel">
+              <div class="gm-panel-head"><div><div class="eyebrow">LIVE STATE</div><h2>Current campaign</h2></div><button class="gm-mini-jump" data-gm-view="campaign">Open</button></div>
+              <div id="dashboardCampaignReadout" class="gm-readout"></div>
+            </section>
+            <section class="gm-panel">
+              <div class="gm-panel-head"><div><div class="eyebrow">REACTIVE WORLD</div><h2>Threat clocks</h2></div><button class="gm-mini-jump" data-gm-view="threads">Open</button></div>
+              <div id="dashboardClockList" class="gm-stack compact"></div>
+            </section>
+          </div>
         </section>
-      </div>
-    </section>
-  </main>
+
+        <section class="gm-view" data-view-panel="people">
+          <div class="gm-section-intro"><div><div class="eyebrow">THE CAST</div><h2>People of Barovia</h2><p>The complete DM record: canon identity, current campaign state, loyalties, knowledge, motives and private notes.</p></div><div class="gm-big-stat"><strong id="npcDbCountTop">—</strong><small>NPC RECORDS</small></div></div>
+
+          <section class="gm-panel gm-npc-database">
+            <div class="gm-npc-tools">
+              <input id="npcDbSearch" placeholder="Search name, place, faction, role or tag">
+              <select id="npcDbRegion"><option value="">All locations</option></select>
+              <select id="npcDbStatus"><option value="">All statuses</option></select>
+              <button id="npcDbClear" class="secondary">Clear</button>
+            </div>
+            <div class="gm-npc-layout">
+              <div>
+                <div class="gm-npc-count" id="npcDbCount">—</div>
+                <div id="npcDbList" class="gm-npc-directory"></div>
+              </div>
+              <article id="npcDbDetail" class="gm-npc-detail">
+                <div class="gm-npc-empty"><div class="eyebrow">PRIVATE REFERENCE</div><h3>Select an NPC</h3><p>Canon reference, portrayal, goals, knowledge, relationships, Daggerheart notes and campaign-specific live notes appear here.</p></div>
+              </article>
+            </div>
+          </section>
+
+          <details class="gm-utility-drawer">
+            <summary>Live NPC state editor</summary>
+            <section class="gm-panel">
+              <div id="npcList" class="gm-stack"></div>
+              <div class="gm-subform">
+                <input id="npcName" placeholder="NPC name">
+                <input id="npcPublicName" placeholder="Known name">
+                <input id="npcLocation" placeholder="Current location">
+                <input id="npcStatus" placeholder="Status">
+                <input id="npcDisposition" placeholder="Disposition">
+                <textarea id="npcMotive" placeholder="Private motive"></textarea>
+                <button id="saveNpcBtn">Save NPC state</button>
+              </div>
+            </section>
+          </details>
+        </section>
+
+        <section class="gm-view" data-view-panel="places">
+          <div class="gm-section-intro"><div><div class="eyebrow">THE VALLEY</div><h2>Places</h2><p>Every important settlement, road, ruin and refuge as a living location rather than a chapter heading.</p></div></div>
+          <div id="gmPlaceGrid" class="gm-record-grid"></div>
+        </section>
+
+        <section class="gm-view" data-view-panel="factions">
+          <div class="gm-section-intro"><div><div class="eyebrow">POWER & LOYALTY</div><h2>Factions</h2><p>Who wants what, what they can actually do about it, and who stands in their way.</p></div></div>
+          <div id="gmFactionGrid" class="gm-record-grid"></div>
+        </section>
+
+        <section class="gm-view" data-view-panel="threads">
+          <div class="gm-section-intro"><div><div class="eyebrow">MOVING WITHOUT THE PARTY</div><h2>Threads & clocks</h2><p>Situations that develop over time. The party may intervene, ignore them, redirect them or arrive too late.</p></div></div>
+          <div class="gm-grid two">
+            <section class="gm-panel">
+              <div class="gm-panel-head"><div><div class="eyebrow">REACTIVE WORLD</div><h2>Threat clocks</h2></div></div>
+              <div id="clockList" class="gm-stack"></div>
+              <div class="gm-subform">
+                <input id="clockLabel" placeholder="Clock name">
+                <input id="clockOwner" placeholder="Owner / faction">
+                <div class="gm-inline">
+                  <label>Step<input id="clockStep" type="number" min="0" value="0"></label>
+                  <label>Max<input id="clockMax" type="number" min="1" value="4"></label>
+                  <label>Visibility<select id="clockVisibility"><option>hidden</option><option>hinted</option><option>known</option></select></label>
+                </div>
+                <input id="clockHint" placeholder="What evidence could the party notice?">
+                <textarea id="clockAdvance" placeholder="What advances it?"></textarea>
+                <textarea id="clockConsequence" placeholder="What happens when it completes?"></textarea>
+                <button id="saveClockBtn">Add clock</button>
+              </div>
+            </section>
+            <section class="gm-panel">
+              <div class="gm-panel-head"><div><div class="eyebrow">GM METHOD</div><h2>Running threads</h2></div></div>
+              <div class="gm-method">
+                <p><strong>1. Situation, not quest.</strong> Record what is happening and who cares about it.</p>
+                <p><strong>2. Pressure moves.</strong> Decide what changes if nobody interferes.</p>
+                <p><strong>3. Evidence appears.</strong> Let the players see consequences before forcing confrontation.</p>
+                <p><strong>4. Outcomes become canon.</strong> Once the party changes a thread, update the people and places it touches.</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="gm-view" data-view-panel="threats">
+          <div class="gm-section-intro"><div><div class="eyebrow">DANGER</div><h2>Threats</h2><p>Creatures and adversaries indexed by dramatic function for Daggerheart play.</p></div></div>
+          <div id="gmThreatGrid" class="gm-record-grid"></div>
+        </section>
+
+        <section class="gm-view" data-view-panel="secrets">
+          <div class="gm-section-intro"><div><div class="eyebrow">WHAT IS ACTUALLY TRUE</div><h2>Secrets & Lore</h2><p>The GM truth beneath rumours, lies, incomplete histories and supernatural misdirection.</p></div></div>
+          <div id="gmSecretGrid" class="gm-record-grid"></div>
+        </section>
+
+        <section class="gm-view" data-view-panel="strahd">
+          <div class="gm-section-intro"><div><div class="eyebrow">THE LAND'S MASTER</div><h2>Strahd</h2><p>Track attention, restraint, tests and escalation so his involvement feels deliberate rather than random.</p></div></div>
+          <div class="gm-grid two">
+            <section class="gm-panel gm-strahd">
+              <div class="gm-panel-head"><div><div class="eyebrow">PRIVATE PRESSURE</div><h2>Current posture</h2></div><button id="saveStrahdBtn">Save</button></div>
+              <div class="gm-fields">
+                <label>Overall posture<select id="strahdPosture"><option>observe</option><option>test</option><option>intrigue</option><option>isolate</option><option>claim</option><option>destroy</option></select></label>
+                <label>Active target<input id="strahdTarget"></label>
+                <label>Current interest<input id="strahdInterest"></label>
+                <label>Current test<input id="strahdTest"></label>
+                <label class="wide">Next move<textarea id="strahdNext"></textarea></label>
+                <label class="wide">Reason not to escalate<textarea id="strahdRestraint"></textarea></label>
+              </div>
+            </section>
+            <section class="gm-panel">
+              <div class="gm-panel-head"><div><div class="eyebrow">PER CHARACTER</div><h2>Attention</h2></div></div>
+              <div id="attentionList" class="gm-stack"></div>
+              <div class="gm-subform">
+                <input id="attentionName" placeholder="Character name">
+                <select id="attentionStage"><option>observe</option><option>test</option><option>intrigue</option><option>isolate</option><option>claim</option><option>destroy</option></select>
+                <input id="attentionReason" placeholder="Why Strahd is interested">
+                <input id="attentionPressure" placeholder="Next pressure">
+                <textarea id="attentionNotes" placeholder="Private notes"></textarea>
+                <button id="saveAttentionBtn">Save character attention</button>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="gm-view" data-view-panel="campaign">
+          <div class="gm-section-intro"><div><div class="eyebrow">CANON IN MOTION</div><h2>Campaign State</h2><p>The current truth of this particular Barovia: where the party is, what has changed and what pressure is immediate.</p></div></div>
+          <section class="gm-panel">
+            <div class="gm-panel-head"><div><div class="eyebrow">LIVE STATE</div><h2>Campaign</h2></div><button id="saveCampaignBtn">Save</button></div>
+            <div class="gm-fields">
+              <label>Current location<input id="campaignLocation"></label>
+              <label>Immediate pressure<input id="campaignPressure"></label>
+              <label>Campaign phase<input id="campaignPhase"></label>
+              <label class="wide">GM notes<textarea id="campaignNotes"></textarea></label>
+            </div>
+          </section>
+        </section>
+
+        <section class="gm-view" data-view-panel="sessions">
+          <div class="gm-section-intro"><div><div class="eyebrow">PREP → PLAY → CANON</div><h2>Sessions</h2><p>Keep session prep focused on likely situations, then convert what actually happened into permanent campaign state.</p></div></div>
+          <div id="gmSessionBoard" class="gm-session-board"></div>
+        </section>
+
+        <section class="gm-view" data-view-panel="reference">
+          <div class="gm-section-intro"><div><div class="eyebrow">BEHIND THE SCREEN</div><h2>Reference</h2><p>Fast reminders for how this Barovia is being run in Daggerheart.</p></div></div>
+          <div id="gmReferenceGrid" class="gm-record-grid"></div>
+        </section>
+      </section>
+    </main>
+  </div>
 </div>
 
-<script src="gm-config.js?v=1"></script>\n<script src="gm-npcs.js?v=1"></script>
-<script type="module" src="gm.js?v=1"></script>
-<a class="site-switch-float site-switch-player" href="./">← Player Site</a>
+<script src="gm-config.js?v=1"></script>
+<script src="gm-npcs.js?v=1"></script>
+<script src="gm-world.js?v=1"></script>
+<script type="module" src="gm.js?v=3"></script>
 </body>
 </html>
