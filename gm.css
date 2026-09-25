@@ -258,3 +258,26 @@ linear-gradient(135deg,#181115,#0d090b);position:relative;overflow:visible}
   .gm-brain-rings{grid-template-columns:1fr}
   .gm-brain-banner span{left:18px;right:18px;font-size:20px}
 }
+
+
+/* Visual Library / cinematography production plan */
+.gm-shot-tools{display:flex;gap:8px;align-items:center;margin:0 0 16px}
+.gm-shot-tools select{background:#0f0b0d;border:1px solid #432d35;color:#eee5e8;padding:10px 11px;min-width:180px}
+.gm-shot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.gm-shot-card{border:1px solid #3b2830;background:linear-gradient(180deg,#151013,#0f0b0d);padding:18px;min-height:360px}
+.gm-shot-card-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.gm-shot-card-top>span{display:inline-grid;place-items:center;width:30px;height:30px;border:1px solid #69404d;color:#c2aa79;font:15px Georgia,serif}
+.gm-shot-card-top small{color:#8c7d83;font-size:8px;letter-spacing:.12em;text-transform:uppercase}
+.gm-shot-card h3{font:27px Georgia,serif;margin:12px 0 5px}
+.gm-shot-purpose{margin:0 0 15px;color:#a9999f;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.gm-shot-specs{display:grid;grid-template-columns:1fr 1fr;border:1px solid #302027;margin:12px 0}
+.gm-shot-specs div{padding:10px;border-right:1px solid #302027;border-bottom:1px solid #302027}
+.gm-shot-specs div:nth-child(2n){border-right:0}.gm-shot-specs div:nth-last-child(-n+2){border-bottom:0}
+.gm-shot-specs small,.gm-shot-card section>small,.gm-shot-card footer>small{display:block;color:#786970;font-size:7px;letter-spacing:.13em}
+.gm-shot-specs strong{display:block;color:#ddd1d5;font-size:11px;line-height:1.45;margin-top:3px}
+.gm-shot-card section{padding:10px 0;border-top:1px solid #2f2025}
+.gm-shot-card section p{margin:5px 0 0;color:#b5a7ac;font-size:11px;line-height:1.55}
+.gm-shot-card footer{padding-top:11px;border-top:1px solid #2f2025}
+.gm-shot-card footer strong{display:block;color:#c2aa79;font-size:10px;margin-top:4px}
+@media(max-width:900px){.gm-shot-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.gm-shot-tools{align-items:stretch;flex-direction:column}.gm-shot-tools select{width:100%}.gm-shot-specs{grid-template-columns:1fr}.gm-shot-specs div{border-right:0}.gm-shot-specs div:nth-last-child(-n+2){border-bottom:1px solid #302027}.gm-shot-specs div:last-child{border-bottom:0}}
